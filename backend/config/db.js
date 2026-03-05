@@ -13,7 +13,7 @@ const connectDB = async () => {
         await sequelize.authenticate();
         console.log("Database connected successfully.");
         // Load relatinships
-        require("../model/index")
+        require("../models/index")
     } catch (error) {
         console.error("Unable to connect to the database:", error);
     }
