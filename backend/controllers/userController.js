@@ -27,6 +27,37 @@ const registerUser = async(req,res)=>{
     } catch (error) {
         res.status(500).json({message:"Server error",error:error.message})
     }
+}
+
+const loginUser=async(req,res)=>{
+
+    try {
+        
+        const {phone,password}=req.body;
+    
+        const existingUser=await User.findOne({where:{phone}});
+        
+        if(!existingUser)
+            {
+                return res.status(400).json({message:"User not found"})
+            }
+            else
+                {
+            const isMatch = await bcrypt.compare(password, existingUser.password);
+
+            if(!isMatch)
+            {
+            return res.status(400).json({message:"Invalid password"});
+            }
+            if(isMatch)
+            {
+                return res.status(200);
+            }
+            return res.status({message:"Log in succesful"})
+        }
+    } catch (error) {
+        return res.status(500).json({message:"Server error"});
+    }
 
 }
 
