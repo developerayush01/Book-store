@@ -51,6 +51,16 @@ const loginUser=async(req,res)=>{
             }
             if(isMatch)
             {
+                const token=jwt.sign(
+                    {userId:existingUser.id,phone:existingUser.phone},
+                process.env.JWT_SECRET,
+            {expiresIn:"30d"}
+        )
+
+        res.cookie("token",token,{
+            httpOnly:true,
+            maxAge:30*24*60*60*1000
+        })
                 return res.status(200).json({message:"Log in succesful"});
             }
             
@@ -61,4 +71,4 @@ const loginUser=async(req,res)=>{
 
 }
 
-modules.exports= {registerUser};
+module.exports= {registerUser,loginUser};
