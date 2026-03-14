@@ -44,5 +44,43 @@ const addBook=async(req,res)=>{
 
 }
 
-module.exports={addBook};
+const getAllBooks=async(req,res)=>{
+    try {
+        const book=await Book.findAll({where:{status:"Available"}});
+        if(book.length===0)
+        {
+            return res.status(200).json({message:"No books available"});
+        }
+
+        return res.status(200).json({book});
+    } catch (error) {
+          return res.status(500).json("Server error on get All books");
+    }
+
+
+}
+
+const getBookbyId=async(req,res)=>{
+
+    try {
+        
+        const bookId=req.params.id;
+        if(!bookId)
+            {
+                return res.status(404).json({message:"Book not found"});
+            }
+            
+            const bookData=await Book.findOne({where:{id:bookId}});
+            if(!bookData)
+            {
+                return res.status(404).json({message:"Data not found"});
+            }
+        return res.status(200).json(bookData);
+
+    } catch (error) {
+        return res.status(500).json({message:"Server error on GetbookbyId"});
+    }
+
+}
+module.exports={addBook,getAllBooks,getBookbyId};
 

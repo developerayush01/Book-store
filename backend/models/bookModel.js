@@ -36,6 +36,10 @@ const Book = sequelize.define("Book", {
   seller_id: {
     type: DataTypes.UUID,
     allowNull: false
+  },
+  status:{
+    type:DataTypes.ENUM("Available","Sold"),
+    defaultValue:"Available"
   }
 
 }, {
