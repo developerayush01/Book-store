@@ -82,5 +82,51 @@ const getBookbyId=async(req,res)=>{
     }
 
 }
-module.exports={addBook,getAllBooks,getBookbyId};
+
+const getMyBooks=async(req,res)=>{
+
+    try {
+        
+        const loggedId=req.user.userId;
+        if(!loggedId)
+            {
+                return res.status(401).json({message:"You are not logged in"});
+            }
+            const books=await Book.findAll({where:{seller_id:loggedId}});
+
+            if(books.length===0)
+            {
+                return res.status(200).json({message:"No books listed"});
+            }
+        return res.status(200).json({books});
+
+
+    } catch (error) {
+        return res.status(500).json({message:"Server error on getmybook"});
+    }
+
+}
+
+const getBooksBySeller=async(req,res)=>{
+
+    try {
+        const sellerId=req.params.id;
+        if(!sellerId)
+        {
+            return res.status(404).json({message:"Seller not found"});
+        }
+        const books=await Book.findAll({where:{seller_id:sellerId}});
+
+        if(books.length===0)
+        {
+            return res.status(200).json({message:"No books found"})
+        }
+
+        return res.status(200).json({books});
+
+    } catch (error) {
+        return res.status(500).json({message:"Server error on getbookbyseller"});
+    }
+}
+module.exports={addBook,getAllBooks,getBookbyId,getMyBooks,getBooksBySeller};
 
