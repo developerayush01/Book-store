@@ -96,6 +96,11 @@ const editBook=async(req,res)=>{
         const seller_id=req.user.userId;
         const book=await Book.findOne({where:{id:bookId}});
 
+        if(!book.seller_id==seller_id)
+        {
+            return res.status(403).json({message:"Not authourized to edit this book"})
+        }
+
         const updatedBook=req.body;
 
 
