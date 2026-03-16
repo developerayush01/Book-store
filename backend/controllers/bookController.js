@@ -94,8 +94,8 @@ const editBook=async(req,res)=>{
         }
 
         const seller_id=req.user.userId;
+        const book=await Book.findOne({where:{id:bookId}});
 
-        
         const updatedBook=req.body;
 
 
