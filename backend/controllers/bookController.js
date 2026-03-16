@@ -83,6 +83,29 @@ const getBookbyId=async(req,res)=>{
 
 }
 
+const editBook=async(req,res)=>{
+
+    try {
+        const bookId=req.params.id;
+
+        if(!bookId)
+        {
+            return res.status(401).json({message:"Book not found"});
+        }
+
+        const seller_id=req.user.userId;
+
+        
+        const updatedBook=req.body;
+
+
+
+    } catch (error) {
+        
+    }
+
+}
+
 const getMyBooks=async(req,res)=>{
 
     try {
