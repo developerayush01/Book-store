@@ -90,23 +90,27 @@ const editBook=async(req,res)=>{
 
         if(!bookId)
         {
-            return res.status(401).json({message:"Book not found"});
+            return res.status(404).json({message:"Book not found"});
         }
 
         const seller_id=req.user.userId;
         const book=await Book.findOne({where:{id:bookId}});
+        if(!book) {
+    return res.status(404).json({ message: "Book not found" });
+}
 
-        if(!book.seller_id==seller_id)
+        if(book.seller_id!==seller_id)
         {
             return res.status(403).json({message:"Not authourized to edit this book"})
         }
 
         const updatedBook=req.body;
-
+        await book.update(updatedBook);
+        return res.status(200).json({message:"Book updated succesfully"});
 
 
     } catch (error) {
-        
+        return res.status(500).json({message:"Server error on book update"});
     }
 
 }
@@ -155,6 +159,32 @@ const getBooksBySeller=async(req,res)=>{
     } catch (error) {
         return res.status(500).json({message:"Server error on getbookbyseller"});
     }
+}
+
+const deleteBook=async(req,res)=>{
+
+    try {
+        const loggedIn=req.user.userId;
+        const bookId=req.params.id;
+        if(!loggedIn)
+        {
+            return res.status(401).json({message:"You are not logged in"});
+        }
+
+        const book=await Book.findOne({where:{id:bookId}});
+
+        
+        if(!book)
+            {
+                return res.status(201).json({message:"Book not found"});
+            }
+            const removeBook=await Book.destroy();
+        return res.status(200).json({removeBook});
+        return res.status(200).json({message:"Book deleted succefully"});
+    } catch (error) {
+        return res.status(500).json({message:"Server error"});
+    }
+
 }
 module.exports={addBook,getAllBooks,getBookbyId,getMyBooks,getBooksBySeller};
 
