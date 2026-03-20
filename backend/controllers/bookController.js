@@ -166,6 +166,11 @@ const deleteBook=async(req,res)=>{
     try {
         const loggedIn=req.user.userId;
         const bookId=req.params.id;
+
+        if(!bookId) {
+    return res.status(400).json({ message: "Book ID is required" });
+}
+
         if(!loggedIn)
         {
             return res.status(401).json({message:"You are not logged in"});
@@ -176,11 +181,16 @@ const deleteBook=async(req,res)=>{
         
         if(!book)
             {
-                return res.status(201).json({message:"Book not found"});
+                return res.status(404).json({message:"Book not found"});
             }
-            const removeBook=await Book.destroy();
-        return res.status(200).json({removeBook});
-        return res.status(200).json({message:"Book deleted succefully"});
+
+            if(book.seller_id!==loggedIn)
+            {
+                return res.status(403).json({message:"Not authorized to delete"});
+            }
+            await book.destroy();
+return res.status(200).json({ message: "Book deleted successfully" });
+
     } catch (error) {
         return res.status(500).json({message:"Server error"});
     }
