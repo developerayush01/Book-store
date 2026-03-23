@@ -196,5 +196,5 @@ return res.status(200).json({ message: "Book deleted successfully" });
     }
 
 }
-module.exports={addBook,getAllBooks,getBookbyId,getMyBooks,getBooksBySeller};
+module.exports={addBook,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook};
 
