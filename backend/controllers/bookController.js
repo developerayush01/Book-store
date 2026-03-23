@@ -124,7 +124,10 @@ const getMyBooks=async(req,res)=>{
             {
                 return res.status(401).json({message:"You are not logged in"});
             }
-            const books=await Book.findAll({where:{seller_id:loggedId}});
+            const books=await Book.findAll({
+                where:{seller_id:loggedId},
+            attributes: { exclude: ["createdAt", "updatedAt"] }
+});
 
             if(books.length===0)
             {
