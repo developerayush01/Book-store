@@ -5,10 +5,10 @@ const {addBook,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,dele
 
 router.post('/add-book',auth,addBook);
 router.get('/get-all',getAllBooks);
-router.get('/:id',getBookbyId);
 router.put('/edit-book/:id',auth,editBook);
-router.get('/my-books/',auth,getMyBooks);
+router.get('/my-books',auth,getMyBooks);
 router.get('/seller/:sellerId',getBooksBySeller);
 router.delete('/delete/:id',auth,deleteBook);
+router.get('/:id',getBookbyId);
 
 module.exports=router;

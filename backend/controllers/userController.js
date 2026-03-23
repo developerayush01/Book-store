@@ -91,4 +91,19 @@ const getProfile=async(req,res)=>{
     }
 }
     
-module.exports= {registerUser,loginUser,getProfile};
+const logOut=async(req,res)=>{
+    try {
+    const userId=req.user.userId;
+    if(!userId)
+    {
+        return res.status(401).json({message:"You are not logged in"});
+    }
+
+    res.clearCookie("token");
+    return res.status(200).json({ message: "Logged out successfully" });
+    
+} catch (error) {
+    return res.status(500).json({message:"Server error on logout"});
+}
+}
+module.exports= {registerUser,loginUser,getProfile,logOut};
