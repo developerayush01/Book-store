@@ -1,8 +1,8 @@
 # Book Store Testing Checklist
 
 ## User Routes
-- [ ] Register new user
-- [ ] Register same phone again → "Phone already registered"
+- [x] Register new user
+- [x] Register same phone again → "Phone already registered"
 - [ ] Login with correct details
 - [ ] Login with wrong phone → "User not found"
 - [ ] Login with wrong password → "Invalid password"
