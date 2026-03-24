@@ -145,7 +145,7 @@ const getMyBooks=async(req,res)=>{
 const getBooksBySeller=async(req,res)=>{
 
     try {
-        const sellerId=req.params.id;
+        const sellerId=req.params.sellerId;
         if(!sellerId)
         {
             return res.status(404).json({message:"Seller not found"});
