@@ -150,7 +150,10 @@ const getBooksBySeller=async(req,res)=>{
         {
             return res.status(404).json({message:"Seller not found"});
         }
-        const books=await Book.findAll({where:{seller_id:sellerId}});
+        const books=await Book.findAll({
+            where:{seller_id:sellerId},
+        attributes:{exclude:["seller_id","createdAt","updatedAt"]}
+    });
 
         if(books.length===0)
         {
