@@ -3,26 +3,27 @@
 ## User Routes
 - [x] Register new user
 - [x] Register same phone again → "Phone already registered"
-- [ ] Login with correct details
-- [ ] Login with wrong phone → "User not found"
-- [ ] Login with wrong password → "Invalid password"
-- [ ] Get profile while logged in
-- [ ] Get profile while logged out → 401
-- [ ] Logout
+- [x] Login with correct details
+- [x] Login with wrong phone → "User not found"
+- [x] Login with wrong password → "Invalid password"
+- [x] Get profile while logged in
+- [x] Get profile while logged out → 401
+- [x] Logout
 
 ## Book Routes
-- [ ] Add book while logged in
-- [ ] Add same book again → "Book exists already"
-- [ ] Add book while logged out → 401
-- [ ] Get all books (public)
-- [ ] Get book by ID
-- [ ] Get wrong book ID → 404
-- [ ] Get my books while logged in
-- [ ] Get books by seller ID
-- [ ] Edit own book
-- [ ] Edit another user's book → 403
-- [ ] Delete own book
-- [ ] Delete another user's book → 403
+- [x] Add book while logged in
+- [x] Add same book again → "Book exists already"
+- [x] Add book while logged out → 401
+- [x] Get all books (public)
+- [x] Get book by ID
+- [x] Get wrong book ID → 404
+- [x] Get my books while logged in
+- [x] Get books by seller ID
+- [x] Edit own book
+- [x] Edit another user's book → 403
+- [x] Delete own book
+- [x] Delete another user's book → 403
+- [x] Delete when logged out → 401
 
 ## Order Routes
 - [ ] Create order
