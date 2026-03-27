@@ -14,7 +14,7 @@ const createOrder=async(req,res)=>{
         for(const bookId of bookIds)
         {
 
-            const book=await Book.findOne({where:{id:book_id}})
+            const book=await Book.findOne({where:{id:bookId}});
             
             if(!book)
             {
