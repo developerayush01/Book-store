@@ -4,29 +4,32 @@ const Book=require("../models/bookModel");
 const createOrder=async(req,res)=>{
 
     try {
-        const loggedId=res.user.userId;
+        const loggedId=req.user.userId;
         if(!loggedId)
         {
             return res.status(401).json({message:"Please login first"});
         }
-        const {book_id}=req.body;
+        const {bookIds}=req.body;
 
-        const book=await Book.findOne({where:{id:book_id}})
-        
-        if(!book)
+        for(const bookId of bookIds)
         {
-            return res.status(404).json({message:"Book not found"});
-        }
 
-        if(book.status=="Unavailable")
-        {
-            return res.status(400).json({message:"Book is already sold"});
+            const book=await Book.findOne({where:{id:book_id}})
+            
+            if(!book)
+            {
+                return res.status(404).json({message:"Book not found"});
+            }
+    
+            if(book.status=="Sold")
+            {
+                return res.status(400).json({message:"Book is already sold"});
+            }
+    
+            return res.status(200).json({book});
         }
-
-        return res.status(200).json({book});
 
     } catch (error) {
-        
+        return res.status(500).json({message:"Server error on order"});
     }
-
 }
