@@ -11,11 +11,11 @@ const createOrder=async(req,res)=>{
         }
         const {bookIds}=req.body;
 
+        let totalPrice=0;
         for(const bookId of bookIds)
         {
 
             const book=await Book.findOne({where:{id:bookId}});
-            
             if(!book)
             {
                 return res.status(404).json({message:"Book not found"});
@@ -25,9 +25,14 @@ const createOrder=async(req,res)=>{
             {
                 return res.status(400).json({message:"Book is already sold"});
             }
-    
-            return res.status(200).json({book});
+            totalPrice+=book.price;
         }
+        const order=await Order.create({
+            buyer_id:loggedId,
+            total_price:totalPrice,
+            status:"pending"
+        });
+        
 
     } catch (error) {
         return res.status(500).json({message:"Server error on order"});
