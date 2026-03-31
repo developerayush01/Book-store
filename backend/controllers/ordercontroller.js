@@ -52,4 +52,23 @@ const createOrder=async(req,res)=>{
     }
 }
 
+const getmyOrders=async(req,res)=>{
+    try {
+        const loggedId=req.user.userId;
+        if(!loggedId)
+        {
+            return res.status(401).json({message:"Please login first"});
+        }
+        if(!id)
+        {
+            return res.status(401).json({message:"Please put the id"});
+        }
+
+        const book=await OrderItem.findAll({where:{id:buyer_id}});
+
+    } catch (error) {
+        
+    }
+
+}
 module.exports={createOrder};
