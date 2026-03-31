@@ -52,7 +52,7 @@ const createOrder=async(req,res)=>{
     }
 }
 
-const getmyOrders=async(req,res)=>{
+const getmyOrder=async(req,res)=>{
     try {
         const loggedId=req.user.userId;
         if(!loggedId)
@@ -64,11 +64,11 @@ const getmyOrders=async(req,res)=>{
             return res.status(401).json({message:"Please put the id"});
         }
 
-        const book=await OrderItem.findAll({where:{id:buyer_id}});
+        const book=await Order.findAll({where:{id:buyer_id}});
 
     } catch (error) {
-        
+         return res.status(500).json({message:"Server error on my order"});
     }
 
 }
-module.exports={createOrder};
+module.exports={createOrder,getMyOrder};
