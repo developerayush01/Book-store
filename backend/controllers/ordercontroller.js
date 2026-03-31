@@ -52,7 +52,7 @@ const createOrder=async(req,res)=>{
     }
 }
 
-const getmyOrder=async(req,res)=>{
+const getMyOrder=async(req,res)=>{
     try {
         const loggedId=req.user.userId;
         if(!loggedId)
