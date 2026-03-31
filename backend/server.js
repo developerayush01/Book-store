@@ -5,6 +5,7 @@ const cors = require("cors");
 const cookieParser=require("cookie-parser");
 const userRoutes=require("./routes/userRoutes")
 const bookRoutes=require("./routes/bookRoutes");
+const orderRoutes=require("./routes/orderRoutes");
 
 const { connectDB } = require("./config/db"); // import your DB connection
 
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/users",userRoutes);
 app.use("/api/books",bookRoutes);
+app.use("/api/order",orderRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
