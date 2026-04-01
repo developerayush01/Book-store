@@ -50,11 +50,9 @@ const getMyOrder = async (req, res) => {
     if (!loggedId) {
       return res.status(401).json({ message: "Please login first" });
     }
-    if (!id) {
-      return res.status(401).json({ message: "Please put the id" });
-    }
 
-    const book = await Order.findAll({ where: { id: buyer_id } });
+    const book = await Order.findAll({ where: { buyer_id: loggedId} });
+    return res.status(200).json({book});
   } catch (error) {
     return res.status(500).json({ message: "Server error on my order" });
   }
