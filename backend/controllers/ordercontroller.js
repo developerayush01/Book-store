@@ -27,7 +27,7 @@ const createOrder = async (req, res) => {
     const order = await Order.create({
       buyer_id: loggedId,
       total_price: totalPrice,
-      status: "pending",
+      status: "Pending",
     });
 
     for (const book of books) {
@@ -51,8 +51,11 @@ const getMyOrder = async (req, res) => {
       return res.status(401).json({ message: "Please login first" });
     }
 
-    const book = await Order.findAll({ where: { buyer_id: loggedId} });
-    return res.status(200).json({book});
+    const orders = await Order.findAll({ where: { buyer_id: loggedId} });
+    if(orders.length === 0) {
+    return res.status(200).json({ message: "You have no orders yet" });
+}
+    return res.status(200).json({orders});
   } catch (error) {
     return res.status(500).json({ message: "Server error on my order" });
   }
