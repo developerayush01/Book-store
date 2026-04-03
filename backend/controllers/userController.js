@@ -13,6 +13,12 @@ const registerUser = async(req,res)=>{
             return res.status(400).json({message:"Phone number  already registered"});
         }
 
+        const existingEmail= await User.findOne({where:{email}});
+        if(existingEmail)
+        {
+            return res.status(400).json({message:"Email already existed"});
+        }
+
         const hashPassword=await bcrypt.hash(password,10);
 
         const user=await User.create({
