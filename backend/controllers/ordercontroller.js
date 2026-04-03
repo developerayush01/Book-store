@@ -51,7 +51,7 @@ const getMyOrder = async (req, res) => {
       return res.status(401).json({ message: "Please login first" });
     }
 
-    const orders = await Order.findAll({ where: { buyer_id: loggedId} });
+    const orders = await Order.findAll({ where: { buyer_id: loggedId}, include: [OrderItem]});
     if(orders.length === 0) {
     return res.status(200).json({ message: "You have no orders yet" });
 }
@@ -60,4 +60,28 @@ const getMyOrder = async (req, res) => {
     return res.status(500).json({ message: "Server error on my order" });
   }
 };
-module.exports = {createOrder, getMyOrder};
+
+const getOrderById=async(req,res)=>{
+  try {
+    const loggedId = req.user.userId;
+    const id=req.params.id;
+    if (!loggedId) {
+      return res.status(401).json({ message: "Please login first" });
+    }
+    const orders=await Order.findOne({where:{id:id}, include: [OrderItem]});
+
+    if(!orders) {
+    return res.status(404).json({ message: "You have no orders yet" });
+    }
+
+    if(orders.buyer_id !== loggedId) {
+    return res.status(403).json({ message: "Not authorized to view this order" });
+}
+
+    return res.status(200).json({orders});
+
+  } catch (error) {
+    return res.status(500).json({ message: "Server error on get order by id" });
+  }
+}
+module.exports = {createOrder, getMyOrder,getOrderById};
