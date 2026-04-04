@@ -7,11 +7,13 @@ import Book from "./pages/Book";
 import AddBook from "./pages/AddBook";
 import MyBook from "./pages/MyBook";
 import MyOrder from "./pages/MyOrder";
+import Navbar from "./components/Navbar";
 
 function App() {
 
   return (
     <BrowserRouter>
+    <Navbar/>
     <Routes>
       <Route path="/" element={<Home/>}/>
       <Route path="/login" element={<Login/>}/>
