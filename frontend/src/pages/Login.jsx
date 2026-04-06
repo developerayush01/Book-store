@@ -8,6 +8,7 @@ function Login() {
     const [password,setPassword]=useState("");
     const navigate=useNavigate();
     const {setUser}=useAuth();
+    const [error, setError] = useState("");
 
     const handleLogin=async()=>{
         try {
@@ -17,7 +18,7 @@ function Login() {
             setUser(profile.data.user);
             navigate("/");
         } catch (error) {
-            alert("Login Failed ! Check phone or password");
+            setError(error.response.data.message);
         }
     }
     return (
@@ -25,8 +26,9 @@ function Login() {
             <h2>Login</h2>
             <input type="text" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder='Enter Phone'/>
             <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder='Enter password'/>
-            <button>Login</button>
-            <p>ADo not have account ?</p><span><Link to='/register'>Sign Up</Link>  </span>
+            <button onClick={handleLogin}>Login</button>
+            <p>Do not have account ?</p><span><Link to='/register'>Sign Up</Link>  </span>
+            {error && <p>{error}</p>}
         </div>
 
     )

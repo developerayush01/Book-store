@@ -5,7 +5,6 @@ function Navbar(){
     const { user, mode, setMode } = useAuth();
 return(
 <nav>
-    <Link to="/">Home</Link>
     {
         user ?(
             <span>Welcome,{user.name}</span>
