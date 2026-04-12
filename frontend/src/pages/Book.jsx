@@ -1,7 +1,7 @@
 import { useParams,useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axios'
-import useAuth from '../context/AuthContext'
+import {useAuth} from '../context/AuthContext'
 
 function Book() {
     const { id } = useParams();
@@ -24,14 +24,20 @@ const { user } = useAuth();
     },[id]);
 
     const handleBuy=async()=>{
-        if (!user){
+        try {
+            if (!user){
             navigate("/login");
             return;
-
         }
-        const response=await axiosInstance.post()
-    }
-    return (
+        const response=await axiosInstance.post("/api/orders/create-order",{bookIds:[id]});
+        navigate("/orders");
+    }            
+         catch (error) {
+            alert("Order failed!");
+        }
+};
+
+return (
      <div>
             {book ? (
                 <>
@@ -47,6 +53,5 @@ const { user } = useAuth();
         </div>
 );
 }
-
 
 export default Book;
