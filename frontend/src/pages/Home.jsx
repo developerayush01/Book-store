@@ -4,7 +4,7 @@ import axiosInstance from "../api/axios";
 
 function Home() {
   const [book, setBook] = useState([]);
-  const [error, setError] = useState("");
+  const [setError] = useState("");
 
   useEffect(() => {
     const fetchBooks = async () => {

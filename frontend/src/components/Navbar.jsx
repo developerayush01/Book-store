@@ -20,6 +20,7 @@ return(
     {
         user ?(
             <>
+            <Link to="/">Home</Link>
             <span>Welcome,{user.name}</span>
             <button onClick={handlelogout}>Logout</button>
             <Link to="/profile">Profile</Link>
