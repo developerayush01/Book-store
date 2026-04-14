@@ -8,8 +8,8 @@ function Navbar(){
     const navigate=useNavigate();
     const handlelogout=async()=>{
         try {
-            await axiosInstance.post("/api/users/logout");
-            setUser(null);
+            await axiosInstance.post("api/users/logout");
+            setUser("");
             navigate("/");
         } catch (error) {
             alert("You need to login");
