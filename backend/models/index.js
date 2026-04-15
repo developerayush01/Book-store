@@ -1,5 +1,6 @@
 const User = require("./userModel");
 const Book = require("./bookModel");
+const Cart = require("./cartModel");
 const Order = require("./orderModel");
 const OrderItem = require("./orderItemModel");
 
@@ -21,9 +22,15 @@ OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 Book.hasMany(OrderItem, { foreignKey: "book_id" });
 OrderItem.belongsTo(Book, { foreignKey: "book_id" });
 
+User.hasMany(Cart, { foreignKey: "user_id" });
+Cart.belongsTo(User, { foreignKey: "user_id" });
+Cart.belongsTo(Book, { foreignKey: "book_id" });
+Book.hasMany(Cart, { foreignKey: "book_id" });
+
 module.exports = {
   User,
   Book,
+  Cart,
   Order,
   OrderItem
 };

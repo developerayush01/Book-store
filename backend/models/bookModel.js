@@ -38,7 +38,7 @@ const Book = sequelize.define("Book", {
     allowNull: false
   },
   status:{
-    type:DataTypes.ENUM("Available","Sold"),
+    type:DataTypes.ENUM("Available","Reserved","Sold"),
     defaultValue:"Available"
   }
 
