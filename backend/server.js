@@ -6,6 +6,7 @@ const cookieParser=require("cookie-parser");
 const userRoutes=require("./routes/userRoutes")
 const bookRoutes=require("./routes/bookRoutes");
 const orderRoutes=require("./routes/orderRoutes");
+const cartRoutes=require("./routes/cartRoutes");
 
 const { connectDB } = require("./config/db"); // import your DB connection
 
@@ -32,6 +33,8 @@ app.get("/", (req, res) => {
 app.use("/api/users",userRoutes);
 app.use("/api/books",bookRoutes);
 app.use("/api/orders",orderRoutes);
+app.use("/api/cart",cartRoutes);
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
