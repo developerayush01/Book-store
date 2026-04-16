@@ -17,6 +17,9 @@ const addCart=async(req,res)=>{
             return res.status(404).json({message:"Book not available"});
         }
 
+        if(book.status !== "Available") {
+    return res.status(400).json({ message: "Book is not available" });
+}
         const cartBook=await Cart.findOne({where:{user_id:user,book_id:book_id}})
 
         if(cartBook)
@@ -27,12 +30,51 @@ const addCart=async(req,res)=>{
             user_id:user,
             book_id,
             expiresAt:new Date(Date.now() + 24 * 60 * 60 * 1000)
-        })
+        });
+        await book.update({status:"Reserved"});
         return res.status(201).json({message:"Added to cart succesfully"});
+        
     } catch (error) {
         return res.status(500).json("Server error on add to cart");
     }
 
 }
 
-module.exports={addCart};
+
+const removeCart=async(req,res)=>{
+    try {
+        const user=req.user.userId;
+        const id=req.params.id;
+                if(!user)
+                {
+                    return res.status(403).json({message:"You have to login first"});
+                }
+        
+                await Cart.destroy({where:{
+                    user_id:user,
+                    id:id
+                }});
+                return res.status(200).json({message:"Delete succesful"});
+    } catch (error) {
+        return res.status(500).json("Server error on deletecart");
+    }
+}
+
+const removeAllCart=async(req,res)=>{
+    try {
+        const user=req.user.userId;
+        const id=req.params.id;
+                if(!user)
+                {
+                    return res.status(403).json({message:"You have to login first"});
+                }
+        
+                await Cart.destroy({where:{
+                    user_id:user
+                }});
+                return res.status(200).json({message:"Delete succesful"});
+    } catch (error) {
+        return res.status(500).json("Server error on deletecart");
+    }
+}
+module.exports={addCart,removeCart,removeAllCart};
