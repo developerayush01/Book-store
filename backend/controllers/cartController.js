@@ -40,20 +40,43 @@ const addCart=async(req,res)=>{
 
 }
 
+const myCart=async(req,res)=>{
+    try {
+        const user=req.user.userId;
+        if(!user)
+        {
+            return res.status(403).json({message:"You have to login first"});
+        }
+
+        const cart=await Cart.findAll({where:{user_id:user}});
+
+        return res.status(200).json({cart});
+    } catch (error) {
+        return res.status(500).json("Server error on view cart");
+    }
+}
 
 const removeCart=async(req,res)=>{
     try {
         const user=req.user.userId;
         const id=req.params.id;
+        const item=await Cart.findOne({where:{id:id}});
+        
                 if(!user)
                 {
                     return res.status(403).json({message:"You have to login first"});
                 }
-        
+
+                books=await 
                 await Cart.destroy({where:{
                     user_id:user,
                     id:id
                 }});
+
+                const makeAvailablle=await Book.update(
+                {status:"Available"},
+                {where:{id:item.book_id}}
+            );
                 return res.status(200).json({message:"Delete succesful"});
     } catch (error) {
         return res.status(500).json("Server error on deletecart");
@@ -64,6 +87,10 @@ const removeAllCart=async(req,res)=>{
     try {
         const user=req.user.userId;
         const id=req.params.id;
+        const item=await Cart.findAll({where:{user_id:user}});
+
+        const bookIds=items.map(item=>item.book_id);
+        
                 if(!user)
                 {
                     return res.status(403).json({message:"You have to login first"});
@@ -72,9 +99,14 @@ const removeAllCart=async(req,res)=>{
                 await Cart.destroy({where:{
                     user_id:user
                 }});
+
+                const makeAvailablle=await Book.update(
+                {status:"Available"},
+                {where:{id:bookIds}}
+            );
                 return res.status(200).json({message:"Delete succesful"});
     } catch (error) {
         return res.status(500).json("Server error on deletecart");
     }
 }
-module.exports={addCart,removeCart,removeAllCart};
+module.exports={addCart,myCart,removeCart,removeAllCart};
