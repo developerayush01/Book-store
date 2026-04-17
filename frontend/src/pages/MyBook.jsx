@@ -19,7 +19,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axiosInstance.get("api/books/my-books");
+        const response = await axiosInstance.get("/api/books/my-books");
         setBook(response.data.books);
       } catch (error) {
         setError(error.response.data.message || "Something went wrong");

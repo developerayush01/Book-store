@@ -5,6 +5,7 @@ const AuthContext=createContext();
 export function AuthProvider({children})
 {
  const[user,setUser]=useState(null);
+ const [loading, setLoading] = useState(true);
  const[mode,setMode]=useState("buyer");
  useEffect(()=>{
     const checkLogin=async()=>{
@@ -14,11 +15,14 @@ export function AuthProvider({children})
         } catch (error) {
             setUser(null);
         }
+        finally {
+      setLoading(false);
+    }
     };
     checkLogin();
  },[]);
     return(
-<AuthContext.Provider value={{user, setUser, mode, setMode}}>
+<AuthContext.Provider value={{user, setUser, mode, setMode,loading}}>
     {children}
 </AuthContext.Provider>
     );
