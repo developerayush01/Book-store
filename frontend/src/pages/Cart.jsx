@@ -79,6 +79,33 @@ const handleSelect = (id) => {
         alert("Delete failed");
     }
   };
+
+  const handleCheckout = async() => {
+    if(selectedItems.length === 0) {
+        alert("Please select items to checkout");
+        return;
+    }
+    try {
+        const bookIds=cart.filter(item=>selectedItems.includes(item.id))
+        .map(item=>item.book_id);
+
+        await axiosInstance.post("/api/orders/create-order",{bookIds});
+
+        for(const id of selectedItems) {
+    await axiosInstance.delete(`/api/cart/delete/${id}`);
+}
+
+setCart(cart.filter(item => !selectedItems.includes(item.id)));
+setSelectedItems([]);
+setSelectAll(false);
+
+alert("Order is placed")
+    } catch (error) {
+        alert(error.response.data.message || "Order failed");
+    }
+};
+
+
   return (
     <div>
             {cart.length===0 ? (
@@ -104,9 +131,9 @@ const handleSelect = (id) => {
                     </li>
     </div>
             ))}
-            <button onClick={deleteItems}>Delete</button>
             <h3>Total:{totalPrice}</h3>
-            <button>Checkout</button>
+            <button onClick={deleteItems}>Delete</button>
+            <button onClick={handleCheckout}>Checkout</button>
             </>
         )}
             </div>
