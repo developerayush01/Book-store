@@ -29,13 +29,26 @@ const { user } = useAuth();
             navigate("/login");
             return;
         }
-        const response=await axiosInstance.post("/api/orders/create-order",{bookIds:[id]});
+        await axiosInstance.post("/api/orders/create-order",{bookIds:[id]});
         navigate("/orders");
     }            
          catch (error) {
             alert("Order failed!");
         }
 };
+
+const handleCart=async()=>{
+    try {
+        if (!user){
+            navigate("/login");
+            return;
+        }
+        await axiosInstance.post("/api/cart/add-cart",{book_id:id});
+        alert("Added to Cart Succesfully");
+ } catch (error) {
+        alert("Cannot add to cart");
+    }
+}
 
 return (
      <div>
@@ -46,6 +59,7 @@ return (
                     <p>{book.price}</p>
                     <p>{book.condition}</p>
                     <button onClick={handleBuy}>Buy Now</button>
+                    <button onClick={handleCart}>Add to Cart</button>
                 </>
             ) : (
                 <p></p>

@@ -5,7 +5,7 @@ const {addCart,myCart,removeCart,removeAllCart}=require("../controllers/cartCont
 
 router.post("/add-cart",auth,addCart);
 router.get("/my-cart",auth,myCart);
-router.post("/delete/:id",auth,removeCart);
-router.post("/delete-all",auth,removeAllCart);
+router.delete("/delete/:id",auth,removeCart);
+router.delete("/delete-all",auth,removeAllCart);
 
 module.exports=router;

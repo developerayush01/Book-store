@@ -24,6 +24,7 @@ return(
             <span>Welcome,{user.name}</span>
             <button onClick={handlelogout}>Logout</button>
             <Link to="/profile">Profile</Link>
+            <Link to="/my-cart">Cart</Link>
             </>
         ):
         (

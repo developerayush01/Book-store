@@ -72,8 +72,7 @@ const removeCart=async(req,res)=>{
                 {
                     return res.status(403).json({message:"You have to login first"});
                 }
-
-                books=await 
+                
                 await Cart.destroy({where:{
                     user_id:user,
                     id:id
@@ -95,7 +94,7 @@ const removeAllCart=async(req,res)=>{
         const id=req.params.id;
         const item=await Cart.findAll({where:{user_id:user}});
 
-        const bookIds=items.map(item=>item.book_id);
+        const bookIds=item.map(item=>item.book_id);
         
                 if(!user)
                 {
