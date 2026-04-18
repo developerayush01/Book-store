@@ -48,9 +48,15 @@ const myCart=async(req,res)=>{
             return res.status(403).json({message:"You have to login first"});
         }
 
-        const cart=await Cart.findAll({where:{user_id:user}});
+        const cartItems = await Cart.findAll({
+    where: { user_id: user },
+    include: [{
+        model: Book,
+        attributes: ['title', 'author', 'price', 'condition']
+    }]
+});
 
-        return res.status(200).json({cart});
+        return res.status(200).json({cartItems});
     } catch (error) {
         return res.status(500).json("Server error on view cart");
     }

@@ -7,6 +7,7 @@ import Book from "./pages/Book";
 import AddBook from "./pages/AddBook";
 import MyBook from "./pages/MyBook";
 import MyOrder from "./pages/MyOrder";
+import Cart from "./pages/Cart";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
 <Route path="/my-books" element={<MyBook/>}/>
 <Route path="/add-book" element={<AddBook/>}/>
 <Route path="/my-orders" element={<MyOrder/>}/>
+<Route path="/my-cart" element={<Cart/>}/>
     </Routes>
     </BrowserRouter>
   )
