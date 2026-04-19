@@ -28,7 +28,7 @@ const registerUser = async(req,res)=>{
             password:hashPassword,
         })
 
-        res.status(201).json({message:"User registered succesfully"});
+      return res.status(201).json({message:"User registered succesfully"});
 
     } catch (error) {
         res.status(500).json({message:"Server error",error:error.message})

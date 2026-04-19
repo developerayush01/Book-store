@@ -7,6 +7,8 @@ const userRoutes=require("./routes/userRoutes")
 const bookRoutes=require("./routes/bookRoutes");
 const orderRoutes=require("./routes/orderRoutes");
 const cartRoutes=require("./routes/cartRoutes");
+const addressRoutes=require("./routes/addressRoutes");
+
 require("./utils/cronJobs");
 
 const { connectDB } = require("./config/db"); // import your DB connection
@@ -35,6 +37,7 @@ app.use("/api/users",userRoutes);
 app.use("/api/books",bookRoutes);
 app.use("/api/orders",orderRoutes);
 app.use("/api/cart",cartRoutes);
+app.use("/api/address",addressRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
