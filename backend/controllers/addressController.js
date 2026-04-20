@@ -42,7 +42,20 @@ const deleteAddress=async(req,res)=>{
             return res.status(403).json({message:"You are not logged in"});
         }
         
-        await Address.destroy({where:{id:address,user_id:"user"}});
+        const is_default=await Address.findOne({where:{id:address,user_id:user}});
+
+        if(!is_default) {
+            return res.status(404).json({ message: "Address not found" });
+        }
+        
+        await Address.destroy({where:{id:address,user_id:user}});
+
+        const nextDefault=await Address.findOne({where:{user_id:user}});
+
+        if(is_default.is_default)
+        {
+        await Address.update({where:{id:nextDefault.id}});
+        }
 
         return res.status(200).json("Address delete succesful");
     } catch (error) {
