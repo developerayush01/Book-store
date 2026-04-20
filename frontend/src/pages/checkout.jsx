@@ -19,6 +19,10 @@ if (!loading && !user)
 
 
   const handlePayment=async()=>{
-   
+   try {
+    
+   } catch (error) {
+    
+   }
   }
 }

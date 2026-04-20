@@ -32,4 +32,21 @@ const is_default = !existingAddress;
     }
 }
     
+
+const deleteAddress=async(req,res)=>{
+    try {
+        const user=req.user.userId;
+        const address=req.params.id
+        if(!user)
+        {
+            return res.status(403).json({message:"You are not logged in"});
+        }
+        
+        await Address.destroy({where:{id:address,user_id:"user"}});
+
+        return res.status(200).json("Address delete succesful");
+    } catch (error) {
+        return res.status(500).json({message:"Server Error"});
+    }
+}
 module.exports={addAddress};
