@@ -42,9 +42,9 @@ const deleteAddress=async(req,res)=>{
             return res.status(403).json({message:"You are not logged in"});
         }
         
-        const is_default=await Address.findOne({where:{id:address,user_id:user}});
+        const findAddress=await Address.findOne({where:{id:address,user_id:user}});
 
-        if(!is_default) {
+        if(!findAddress) {
             return res.status(404).json({ message: "Address not found" });
         }
         
@@ -52,9 +52,14 @@ const deleteAddress=async(req,res)=>{
 
         const nextDefault=await Address.findOne({where:{user_id:user}});
 
-        if(is_default.is_default)
+        if(findAddress.is_default)
         {
-        await Address.update({where:{id:nextDefault.id}});
+            if(!nextDefault){
+                
+        await Address.update(
+            {is_default:true},
+            {where:{id:nextDefault.id}});
+        }
         }
 
         return res.status(200).json("Address delete succesful");
@@ -62,4 +67,4 @@ const deleteAddress=async(req,res)=>{
         return res.status(500).json({message:"Server Error"});
     }
 }
-module.exports={addAddress};
+module.exports={addAddress,deleteAddress};
