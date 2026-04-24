@@ -1,5 +1,4 @@
 const  Address = require("../models/addressModel");
-const User=require("../models/userModel");
 
 const addAddress=async(req,res)=>{
 
@@ -13,7 +12,7 @@ const addAddress=async(req,res)=>{
     }
 
     const existingAddress = await Address.findOne({ where: { user_id: user } });
-const is_default = !existingAddress;
+    const is_default = !existingAddress;
 
     await Address.create({
         user_id:user,
@@ -31,8 +30,33 @@ const is_default = !existingAddress;
         return res.status(500).json({message:"Server error on address add"});;
     }
 }
-    
 
+const getAddress=async(req,res)=>{
+    const user=req.user.userId;
+    if(!user)
+    {
+        return res.status(403).json({message:"Not logged in"});
+    }
+
+    const address=await Address.findAll({where:{user_id:user}});
+
+    return res.status(200).json({address});
+}
+
+const setDefault=async(req,res)=>{
+    const user=req.user.userId;
+    const id=res.params.id;
+    if(!user){
+        return res.status(403).json({message:"Not logged in"});
+    }
+
+    const address=await Address.findAll({where:{user_id:user}});
+
+    if(!address)
+    {
+        return res.status(404).json({message:"No address found"})
+    }
+}
 const deleteAddress=async(req,res)=>{
     try {
         const user=req.user.userId;
@@ -55,11 +79,11 @@ const deleteAddress=async(req,res)=>{
         if(findAddress.is_default)
         {
             if(!nextDefault){
-                
+                return res.status(404).json({message:"No other address is found.Please add new address"})
+            }
         await Address.update(
             {is_default:true},
             {where:{id:nextDefault.id}});
-        }
         }
 
         return res.status(200).json("Address delete succesful");
