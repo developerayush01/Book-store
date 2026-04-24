@@ -45,7 +45,7 @@ const getAddress=async(req,res)=>{
 
 const setDefault=async(req,res)=>{
     const user=req.user.userId;
-    const id=res.params.id;
+    const id=req.params.id;
     if(!user){
         return res.status(403).json({message:"Not logged in"});
     }
@@ -56,7 +56,20 @@ const setDefault=async(req,res)=>{
     {
         return res.status(404).json({message:"No address found"})
     }
+
+    await Address.update(
+        {is_default:false},
+        {where:{user_id:user}}
+    );
+
+    await Address.update(
+        {is_default:"true"},
+        {where:{user_id:user,id:id}}
+    );
+
+    return res.status({message:"New default address is set."})
 }
+
 const deleteAddress=async(req,res)=>{
     try {
         const user=req.user.userId;
@@ -91,4 +104,4 @@ const deleteAddress=async(req,res)=>{
         return res.status(500).json({message:"Server Error"});
     }
 }
-module.exports={addAddress,deleteAddress};
+module.exports={addAddress,getAddress,setDefault,deleteAddress};
