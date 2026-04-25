@@ -27,12 +27,14 @@ const addAddress=async(req,res)=>{
     return res.status(201).json({message:"Address added"});
     } catch (error) {
         console.log(error);
-        return res.status(500).json({message:"Server error on address add"});;
+        return res.status(500).json({message:"Server error on address add"});
     }
 }
 
 const getAddress=async(req,res)=>{
-    const user=req.user.userId;
+
+    try {
+        const user=req.user.userId;
     if(!user)
     {
         return res.status(403).json({message:"Not logged in"});
@@ -41,10 +43,16 @@ const getAddress=async(req,res)=>{
     const address=await Address.findAll({where:{user_id:user}});
 
     return res.status(200).json({address});
+    } catch (error) {
+        return res.status(500).json({message:"Server error on get address"});
+    }
+
 }
 
 const setDefault=async(req,res)=>{
-    const user=req.user.userId;
+
+    try {
+        const user=req.user.userId;
     const id=req.params.id;
     if(!user){
         return res.status(403).json({message:"Not logged in"});
@@ -52,7 +60,7 @@ const setDefault=async(req,res)=>{
 
     const address=await Address.findAll({where:{user_id:user}});
 
-    if(!address)
+    if(address.length===0)
     {
         return res.status(404).json({message:"No address found"})
     }
@@ -63,11 +71,16 @@ const setDefault=async(req,res)=>{
     );
 
     await Address.update(
-        {is_default:"true"},
+        {is_default:true},
         {where:{user_id:user,id:id}}
     );
 
-    return res.status({message:"New default address is set."})
+    return res.status(200).json({message:"New default address is set."});
+
+    } catch (error) {
+        return res.status(500).json({ message: "Server error on set default" });
+    }
+    
 }
 
 const deleteAddress=async(req,res)=>{
@@ -104,4 +117,5 @@ const deleteAddress=async(req,res)=>{
         return res.status(500).json({message:"Server Error"});
     }
 }
+
 module.exports={addAddress,getAddress,setDefault,deleteAddress};

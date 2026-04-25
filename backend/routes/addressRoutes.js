@@ -5,7 +5,7 @@ const {addAddress,getAddress,setDefault,deleteAddress}=require("../controllers/a
 
 router.post("/add-address",auth,addAddress);
 router.get("/my-address",auth,getAddress);
-router.update("/set-default/:id",auth,setDefault);
-router.delete("/delete/:id",auth,addAddress);
+router.put("/set-default/:id",auth,setDefault);
+router.delete("/delete/:id",auth,deleteAddress);
 
 module.exports=router;
