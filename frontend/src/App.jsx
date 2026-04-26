@@ -8,6 +8,7 @@ import AddBook from "./pages/AddBook";
 import MyBook from "./pages/MyBook";
 import MyOrder from "./pages/MyOrder";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
 <Route path="/add-book" element={<AddBook/>}/>
 <Route path="/my-orders" element={<MyOrder/>}/>
 <Route path="/my-cart" element={<Cart/>}/>
+<Route path="/checkout" element={<Checkout/>}/>
     </Routes>
     </BrowserRouter>
   )
