@@ -31,18 +31,25 @@ if (!loading && !user)
 
     return (
     <div>
-            {order.length===0 ? (
-              <p>No orders yet</p>
-            ) : (
-                order.map((order)=>(
+        {order.length === 0 ? (
+            <p>No orders yet</p>
+        ) : (
+            order.map((order) => (
                 <div key={order.id}>
-                        <h3>{order.total_price}</h3>
-          <p>{order.status}</p>
-          <button disabled>Cancel</button>
+                    
+                    <p>Status: {order.status}</p>
+                    
+                    {order.OrderItems && order.OrderItems.map(item => (
+                        <div key={item.id}>
+                            <p>{item.Book.title} - Rs {item.price}</p>
+                        </div>
+                    ))}
+                    <h3>Order Total: Rs {order.total_price}</h3>
+                    <button disabled>Cancel</button>
+                </div>
+            ))
+        )}
     </div>
-                ))
-            )}
-            </div>
 );
 }
 export default MyOrder;

@@ -51,7 +51,17 @@ const getMyOrder = async (req, res) => {
       return res.status(401).json({ message: "Please login first" });
     }
 
-    const orders = await Order.findAll({ where: { buyer_id: loggedId}, include: [OrderItem]});
+    const orders = await Order.findAll({ 
+    where: { buyer_id: loggedId },
+    include: [{
+        model: OrderItem,
+        include: [{
+            model: Book,
+            attributes: ['title', 'price']
+        }]
+    }]
+});
+
     if(orders.length === 0) {
     return res.status(200).json({ message: "You have no orders yet" });
 }
@@ -60,6 +70,7 @@ const getMyOrder = async (req, res) => {
     return res.status(500).json({ message: "Server error on my order" });
   }
 };
+
 
 const getOrderById=async(req,res)=>{
   try {
@@ -84,4 +95,36 @@ const getOrderById=async(req,res)=>{
     return res.status(500).json({ message: "Server error on get order by id" });
   }
 }
-module.exports = {createOrder, getMyOrder,getOrderById};
+
+const getMySales=async(req,res)=>{
+  const seller = req.user.userId;
+  try {
+    if(!seller)
+  {
+    return res.status(403).json({message:"Please login first"});
+  }
+
+  const sales=await Order.findAll({
+    include:[{
+      model:OrderItem,
+      required:true,
+      include:[{
+        model:Book,
+        where:{seller_id:seller}
+      }]
+    }]
+  });
+
+  if(sales.length===0)
+  {
+    return res.status(404).json({message:"No orders yet"});
+  }
+
+  return res.status(200).json({sales});
+
+  } catch (error) {
+    return res.status(500).json({ message: "Server error on get my sales" });
+  }
+  
+}
+module.exports = {createOrder, getMyOrder,getOrderById,getMySales};
