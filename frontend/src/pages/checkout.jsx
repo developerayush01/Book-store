@@ -25,15 +25,19 @@ if (!loading && !user)
   const handlePayment=async()=>{
    try {
     await axiosInstance.post("/api/orders/create-order",{bookIds});
+    console.log("Order created!");
 
+    if(selectedCartItems[0].id && selectedCartItems[0].id !== selectedCartItems[0].book_id) {
     for(const item of selectedCartItems) {
                 await axiosInstance.delete(`/api/cart/delete/${item.id}`);
             }
+          }
 
     navigate("/my-orders");
-    } catch (error) {
-         alert("Order failed!");
-    }
+
+    } catch(error) {
+    alert("Order failed!");
+}
   }
 
   return (

@@ -14,6 +14,10 @@ const createOrder = async (req, res) => {
     const books = [];
     for (const bookId of bookIds) {
       const book = await Book.findOne({ where: { id: bookId } });
+
+       console.log("Checking book ID:", bookId); // ← add this
+    console.log("Book status in DB:", book ? book.status : "not found");
+    
       if (!book) {
         return res.status(404).json({ message: "Book not found" });
       }

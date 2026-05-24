@@ -26,14 +26,18 @@ const { user } = useAuth();
     const handleBuy=async()=>{
         try {
             if (!user){
-            navigate("/login");
+            navigate("/login", { state: { from: `/books/${id}` } });
             return;
         }
-        await axiosInstance.post("/api/orders/create-order",{bookIds:[id]});
-        navigate("/orders");
+       
+        navigate("/checkout", { 
+    state: { 
+        selectedCartItems: [{ Book: book, book_id: id }] // wrap single book as array
+    } 
+});
     }            
          catch (error) {
-            alert("Order failed!");
+            alert("Server error");
         }
 };
 
