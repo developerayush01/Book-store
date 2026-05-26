@@ -32,7 +32,7 @@ const { user } = useAuth();
        
         navigate("/checkout", { 
     state: { 
-        selectedCartItems: [{ Book: book, book_id: id }] // wrap single book as array
+        selectedCartItems: [{ Book: book, book_id: id }]
     } 
 });
     }            

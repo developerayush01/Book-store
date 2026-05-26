@@ -15,6 +15,11 @@ const Order = sequelize.define("Order", {
     allowNull: false
   },
 
+  address_id: {
+    type: DataTypes.UUID,
+    allowNull: true
+},
+
   total_price: {
     type: DataTypes.FLOAT,
     allowNull: false

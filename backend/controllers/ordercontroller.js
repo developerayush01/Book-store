@@ -32,6 +32,7 @@ const createOrder = async (req, res) => {
       buyer_id: loggedId,
       total_price: totalPrice,
       status: "Pending",
+       address_id: selectedAddressId
     });
 
     for (const book of books) {

@@ -7,6 +7,9 @@ import { useNavigate,useLocation} from "react-router-dom";
 function Checkout() {
     const [order, setOrder] = useState([]);
   const [error,setError] = useState("");
+  const [address,setAddress]=useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [showAddressForm, setShowAddressForm] = useState(false);
   const navigate = useNavigate();
   const {user, loading}=useAuth();
   const location = useLocation();
@@ -22,6 +25,26 @@ if (!loading && !user)
   },[user,navigate,loading]);
 
 
+  useEffect(()=>{
+    const fetchAddress=async()=>{
+      try {
+        const response=await axiosInstance.get("api/address/my-address");
+        setAddress(response.data.address);
+        const defaultAddress=response.data.address.find(addr=>addr.isdefault);
+
+        if(defaultAddress)
+        {
+          setSelectedAddressId(defaultAddr.id);
+        }
+
+      } catch (error) {
+        alert("Something went wrong");
+      }
+    }
+    fetchAddress();
+  },[]);
+
+
   const handlePayment=async()=>{
    try {
     await axiosInstance.post("/api/orders/create-order",{bookIds});
@@ -32,9 +55,7 @@ if (!loading && !user)
                 await axiosInstance.delete(`/api/cart/delete/${item.id}`);
             }
           }
-
     navigate("/my-orders");
-
     } catch(error) {
     alert("Order failed!");
 }
@@ -49,8 +70,35 @@ if (!loading && !user)
                 <p>{item.Book.title} - Rs {item.Book.price}</p>
             </div>
         ))}
-
+        <div></div>
         <h3>Total: Rs {totalPrice}</h3>
+        <div>
+          <h3>Delivery Address</h3>
+          <div>
+            {
+              address.length==0 ?
+              (
+                 <button>Add Address</button>
+              ):
+              (
+                <>
+                {address.map(addr=>(
+                  <div key={addr.id}>
+                    <input type="radio" name="address" 
+                    checked={selectedAddressId === addr.id}
+                     onChange={() => setSelectedAddressId(addr.id)} />
+                     <label>
+                        {addr.street}, {addr.city}, {addr.district}, {addr.province}
+                        {addr.is_default && <span> (Default)</span>}
+                    </label>
+                  </div>
+                ))}
+                 <button>Add New Address</button>
+                </>
+              )
+            }
+          </div>
+        </div>
         <button onClick={handlePayment}>Place Order</button>
     </div>
 );
