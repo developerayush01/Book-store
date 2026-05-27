@@ -47,7 +47,7 @@ if (!loading && !user)
 
   const handlePayment=async()=>{
    try {
-    await axiosInstance.post("/api/orders/create-order",{bookIds});
+    await axiosInstance.post("/api/orders/create-order",{bookIds,address_id: selectedAddressId});
     console.log("Order created!");
 
     if(selectedCartItems[0].id && selectedCartItems[0].id !== selectedCartItems[0].book_id) {
@@ -59,6 +59,24 @@ if (!loading && !user)
     } catch(error) {
     alert("Order failed!");
 }
+  }
+
+  const handleSetDefault=async()=>{
+    try {
+      await axiosInstance(`api/address/set-default/${address_id}`);
+      const response=await axiosInstance("api/address/my-address");
+      setAddress(response.data.address);
+    } catch (error) {
+      alert("Faioled to set default address");
+    }
+  };
+
+  const handleAddNewAddress=async()=>{
+    await axiosInstance.post("api/address/add-address")
+
+  }
+  const handleDelivery=async()=>{
+
   }
 
   return (
@@ -78,7 +96,10 @@ if (!loading && !user)
             {
               address.length==0 ?
               (
+                <>
+                <p>No delivery address</p>
                  <button>Add Address</button>
+                 </>
               ):
               (
                 <>
@@ -91,9 +112,14 @@ if (!loading && !user)
                         {addr.street}, {addr.city}, {addr.district}, {addr.province}
                         {addr.is_default && <span> (Default)</span>}
                     </label>
+                    {!addr.is_default && (
+            <button onClick={() => handleSetDefault(addr.id)}>
+                Make Default
+            </button>
+        )}
                   </div>
                 ))}
-                 <button>Add New Address</button>
+                 <button onClick={handleDelivery}>Add New Address</button>
                 </>
               )
             }
