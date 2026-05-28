@@ -16,7 +16,6 @@ const addAddress=async(req,res)=>{
 
     await Address.create({
         user_id:user,
-        delivery_phone,
         street,
         city,
         district,

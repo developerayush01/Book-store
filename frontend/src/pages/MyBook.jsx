@@ -30,8 +30,11 @@ useEffect(() => {
 
 return (
     <div>
-            {book.length===0 ? (
+            {!book || book.length===0 ? (
+              <>
               <p>No books listed yet</p>
+              <button>Add Book</button>
+              </>
             ) : (
                 book.map((book)=>(
                 <div key={book.id}>
@@ -40,6 +43,7 @@ return (
           <p>{book.price}</p>
           <button>Edit</button>
     <button>Delete</button>
+    <button>Add Book</button>
     </div>
                 ))
             )}

@@ -12,10 +12,6 @@ const Address=sequelize.define("Address",{
     type: DataTypes.UUID,
     allowNull: false
   },
-  delivery_phone: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
   street: {
     type: DataTypes.STRING,
     allowNull: false

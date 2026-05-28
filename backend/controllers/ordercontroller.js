@@ -8,14 +8,14 @@ const createOrder = async (req, res) => {
     if (!loggedId) {
       return res.status(401).json({ message: "Please login first" });
     }
-    const { bookIds } = req.body;
+    const { bookIds,address_id } = req.body;
 
     let totalPrice = 0;
     const books = [];
     for (const bookId of bookIds) {
       const book = await Book.findOne({ where: { id: bookId } });
 
-       console.log("Checking book ID:", bookId); // ← add this
+       console.log("Checking book ID:", bookId);
     console.log("Book status in DB:", book ? book.status : "not found");
     
       if (!book) {
@@ -32,7 +32,7 @@ const createOrder = async (req, res) => {
       buyer_id: loggedId,
       total_price: totalPrice,
       status: "Pending",
-       address_id: selectedAddressId
+       address_id: address_id
     });
 
     for (const book of books) {
@@ -72,6 +72,8 @@ const getMyOrder = async (req, res) => {
 }
     return res.status(200).json({orders});
   } catch (error) {
+    console.log("Error in createOrder:", error.message);
+    console.log("Full error:", error);
     return res.status(500).json({ message: "Server error on my order" });
   }
 };
