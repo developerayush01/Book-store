@@ -46,7 +46,7 @@ const addBook=async(req,res)=>{
 
 const getAllBooks=async(req,res)=>{
     try {
-        const book=await Book.findAll({where:{status:"Available"}});
+        const book = await Book.findAll();
         if(book.length===0)
         {
             return res.status(200).json({message:"No books available"});
@@ -56,8 +56,6 @@ const getAllBooks=async(req,res)=>{
     } catch (error) {
           return res.status(500).json("Server error on get All books");
     }
-
-
 }
 
 const getBookbyId=async(req,res)=>{

@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
   const [book, setBook] = useState([]);
-  const [setError] = useState("");
+  const [error,setError] = useState("");
+  const {user}=useAuth();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -24,13 +26,16 @@ function Home() {
       { book && book.length === 0 ? (
     <p>No books available</p>
 ) : (
-      book && book.map((book) => (
+      book && book.filter(b => b.seller_id !== user.id).map((book) => (
+        <>
         <div key={book.id}>
           <h3>{book.title}</h3>
           <p>{book.author}</p>
           <p>{book.price}</p>
           <Link to={`/books/${book.id}`}>View Details</Link>
         </div>
+        <br></br>
+        </>
       ))
   )}
   </div>

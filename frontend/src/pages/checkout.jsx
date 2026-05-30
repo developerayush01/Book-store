@@ -78,14 +78,10 @@ if (!loading && !user)
   };
 
   const handleAddNewAddress=async(formData)=>{
-    console.log("Address func called");
     try {
-      console.log("Adding address:", formData);
       await axiosInstance.post("/api/address/add-address",formData);
-      console.log("Address Aded");
-    const response = await axiosInstance.get("/api/address/my-address");
-    console.log("Fetched addresses:", response.data.address)
 
+    const response = await axiosInstance.get("/api/address/my-address");
          setAddress(response.data.address);
         setShowAddressForm(false);
         setFormData({ street: "", city: "", district: "", province: "" });
@@ -151,13 +147,12 @@ if (!loading && !user)
                   </div>
                   
                 ))}
-                <button onClick={() =>{ console.log("Button clicked!"); setShowAddressForm(true)}}>Add New Address</button> 
+                <button onClick={() =>{setShowAddressForm(true)}}>Add New Address</button> 
                 </>
               )}
 
               {showAddressForm && (
-    <div key="address-form">
-      <p>Form is showing!</p>
+    <div>
       <input 
     value={formData.street}
     onChange={(e) => setFormData({ ...formData, street: e.target.value })}
