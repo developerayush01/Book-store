@@ -56,7 +56,8 @@ useEffect(() => {
   
     const handleDeleteBook=async(book_id)=>{
       try {
-        await axiosInstance.delete(`api/books/delete/${book_id}`);
+        await axiosInstance.delete(`/api/books/delete/${book_id}`);
+        
         const response=await axiosInstance.get("/api/books/my-books");
         setBook(response.data.books);
       } catch (error) {
@@ -71,17 +72,21 @@ return (
               <button onClick={()=>{setshowBookForm(true)}}>Add Book</button>
               </>
             ) : (
-                book.map((book)=>(
+              <>
+                {book.map((book)=>(
                 <div key={book.id}>
                         <h3>{book.title}</h3>
           <p>{book.author}</p>
           <p>{book.price}</p>
           <button>Edit</button>
-    <button>Delete</button>
-    <button onClick={()=>{setshowBookForm(true)}}>Add Book</button>
+    <button onClick={()=>handleDeleteBook(book.id)}>Delete</button>
+    <br />
     </div>
-                ))
-            )}
+  ))}
+            <button onClick={()=>{setshowBookForm(true)}}>Add Book</button>
+  </>
+
+)}
 
             {showBookForm && (
               <div>
