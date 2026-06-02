@@ -14,6 +14,16 @@ function MyBook() {
       description:""
     });
     const[showBookForm,setshowBookForm]=useState(false);
+    const [showEditForm,setshowEditForm]=useState(false);
+    const [EditBook,setEditBook]=useState(null);
+
+    const [EditFormData,setEditFormData]=useState({
+      title: "",
+    author: "",
+    price: "",
+    condition: "",
+    description: ""
+    });
   const [error,setError] = useState("");
   const navigate = useNavigate();
   const {user}=useAuth();
@@ -54,6 +64,32 @@ useEffect(() => {
       }
     };
   
+    const handleEdit=(bookEdit)=>{
+      setEditBook(bookEdit);
+      setEditFormData({
+        title: bookEdit.title,
+        author: bookEdit.author,
+        price: bookEdit.price,
+        condition: bookEdit.condition,
+        description: bookEdit.description
+      });
+      setshowEditForm(true);
+    }
+
+    const handleUpdate=async()=>{
+      try{
+      await axiosInstance.put(`/api/books/edit-book/${EditBook.id}`,EditFormData);
+
+       const response = await axiosInstance.get("/api/books/my-books");
+        setBook(response.data.books);
+
+        setshowEditForm(false);
+      }
+       catch(error) {
+        alert("Could not update book");
+    }
+    }
+    
     const handleDeleteBook=async(book_id)=>{
       try {
         await axiosInstance.delete(`/api/books/delete/${book_id}`);
@@ -78,7 +114,7 @@ return (
                         <h3>{book.title}</h3>
           <p>{book.author}</p>
           <p>{book.price}</p>
-          <button>Edit</button>
+          <button onClick={()=>handleEdit(book)}>Edit</button>
     <button onClick={()=>handleDeleteBook(book.id)}>Delete</button>
     <br />
     </div>
@@ -113,6 +149,33 @@ return (
     placeholder="Enter description"/>
     <button onClick={()=>{addBook(AddBookFormData)}}>Save</button>
     <button onClick={()=>{setshowBookForm(false)}}>Cancel</button>
+              </div>
+            )}
+
+            {showEditForm && (
+              <div>
+                <input 
+    value={EditFormData.title}
+    onChange={(e) => setEditFormData({ ...EditFormData, title: e.target.value })}
+    placeholder="Enter title"/>
+    <input 
+    value={EditFormData.author}
+    onChange={(e) => setEditFormData({ ...EditFormData, author: e.target.value })}
+    placeholder="Enter author"/>
+    <input 
+    value={EditFormData.price}
+    onChange={(e) => setEditFormData({ ...EditFormData, price: e.target.value })}
+    placeholder="Enter price"/>
+    <input 
+    value={EditFormData.condition}
+    onChange={(e) => setEditFormData({ ...EditFormData, condition: e.target.value })}
+    placeholder="Enter condition"/>
+    <input 
+    value={EditFormData.description}
+    onChange={(e) => setEditFormData({ ...EditFormData, description: e.target.value })}
+    placeholder="Enter description"/>
+    <button onClick={handleUpdate}>Save</button>
+    <button onClick={()=>{setshowEditForm(false)}}>Cancel</button>
               </div>
             )}
             </div>
