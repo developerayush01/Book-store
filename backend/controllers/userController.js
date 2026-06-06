@@ -97,6 +97,27 @@ const getProfile=async(req,res)=>{
     }
 }
     
+
+const editProfile=async(req,res)=>{
+    try {
+        const userId=req.user.userId;
+    if(!userId)
+    {
+        return res.status(401).json({message:"You are not logged in"});
+    }
+
+    if(!user) {
+            return res.status(404).json({message:"User not found"});
+        } 
+    const user=await User.findOne({where:{id:userId}});
+    const UpdatedProfile=req.body;
+    await user.update(UpdatedProfile);
+    return res.status(200).json({message:"User updated succesfully"});
+    } catch (error) {
+        return res.status(500).json({message:"Server error on user update"});
+    }
+}
+
 const logOut=async(req,res)=>{
     try {
     const userId=req.user.userId;
@@ -112,4 +133,4 @@ const logOut=async(req,res)=>{
     return res.status(500).json({message:"Server error on logout"});
 }
 }
-module.exports= {registerUser,loginUser,getProfile,logOut};
+module.exports= {registerUser,loginUser,editProfile,getProfile,logOut};
