@@ -101,6 +101,8 @@ const getProfile=async(req,res)=>{
 const editProfile=async(req,res)=>{
     try {
         const userId=req.user.userId;
+        const { name, email, phone } = req.body;
+        const user = await User.findOne({ where: { id: userId } });
     if(!userId)
     {
         return res.status(401).json({message:"You are not logged in"});
@@ -109,9 +111,7 @@ const editProfile=async(req,res)=>{
     if(!user) {
             return res.status(404).json({message:"User not found"});
         } 
-    const user=await User.findOne({where:{id:userId}});
-    const UpdatedProfile=req.body;
-    await user.update(UpdatedProfile);
+    await user.update({ name, email, phone });
     return res.status(200).json({message:"User updated succesfully"});
     } catch (error) {
         return res.status(500).json({message:"Server error on user update"});

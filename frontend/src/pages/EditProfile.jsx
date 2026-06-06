@@ -28,8 +28,7 @@ const handleEditClick = () => {
     setEditFormData({
         name: user.name,
         email: user.email,
-        phone: user.phone,
-        password: ""
+        phone: user.phone
     });
 };
 
@@ -64,12 +63,6 @@ return (
                 value={editFormData.phone}
                 onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
                 placeholder="Phone"
-            />
-
-            <input  type="password"
-                value={editFormData.password}
-                onChange={(e) => setEditFormData({...editFormData, password: e.target.value})}
-                placeholder="Password"
             />
             
             <button onClick={handleUpdateProfile}>Save</button>
