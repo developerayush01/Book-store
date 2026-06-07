@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import ChangePassword from "./pages/ChangePassword";
 import Book from "./pages/Book";
 import AddBook from "./pages/AddBook";
 import MyBook from "./pages/MyBook";
@@ -23,6 +24,7 @@ function App() {
       <Route path="/register" element={<Register/>}/>
       <Route path="/profile" element={<Profile/>}/>
 <Route path="/profile/edit" element={<EditProfile/>}/>
+<Route path="/profile/edit/change-password" element={<ChangePassword/>}/>
 <Route path="/books/:id" element={<Book/>}/>
 <Route path="/my-books" element={<MyBook/>}/>
 <Route path="/add-book" element={<AddBook/>}/>

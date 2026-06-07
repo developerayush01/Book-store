@@ -15,6 +15,7 @@ function Profile() {
         <div>{user.phone}</div>
         <div>{user.email}</div>
         <button onClick={() => navigate("/profile/edit")}>Edit profile</button>
+        <button onClick={() => navigate("/profile/edit/change-password")}>Change Password</button>
         <div><Link to="/my-books">Listed books</Link></div>
     </div>
     );

@@ -34,7 +34,7 @@ const handleEditClick = () => {
 
 const handleUpdateProfile=async()=>{
     try {
-        await axiosInstance.put("/api/user/profile/edit-profile",editFormData);
+        await axiosInstance.put("/api/users/profile/edit-profile",editFormData);
         setUser({...user,...editFormData});
         alert("Profile updated!");
         navigate("/profile");

@@ -118,6 +118,32 @@ const editProfile=async(req,res)=>{
     }
 }
 
+    const changePassword = async(req, res) => {
+        try {
+            const userId=req.user.userId;
+            const user = await User.findOne({ where: { id: userId } });
+             const { oldPassword, newPassword,confirmPassword } = req.body;
+
+    if(!bcrypt.compareSync(oldPassword, user.password)) {
+        return res.status(400).json({message:"Wrong password"});
+    }
+
+    if(oldPassword==newPassword){
+        return res.status(400).json({message:"Same Password Cannot be used"});
+    }
+
+    if(newPassword!==confirmPassword){
+        return res.status(400).json({message:"New Password and confirm password did not matched"});
+    }
+    await user.update({ password: bcrypt.hashSync(newPassword, 10)});
+    return res.status(200).json({message:"Password changed succesfully"});
+        } catch (error) {
+            console.log("Error:", error);
+            return res.status(400).json({message:"Server error on password change"});
+        }
+   
+};
+
 const logOut=async(req,res)=>{
     try {
     const userId=req.user.userId;
@@ -133,4 +159,4 @@ const logOut=async(req,res)=>{
     return res.status(500).json({message:"Server error on logout"});
 }
 }
-module.exports= {registerUser,loginUser,editProfile,getProfile,logOut};
+module.exports= {registerUser,loginUser,editProfile,changePassword,getProfile,logOut};
