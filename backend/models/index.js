@@ -4,6 +4,7 @@ const Cart = require("./cartModel");
 const Order = require("./orderModel");
 const Address = require("./addressModel");
 const OrderItem = require("./orderItemModel");
+const BookImage = require("./bookImageModel");
 
 /* Relationships */
 
@@ -22,6 +23,9 @@ OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 // Each order item references a book
 Book.hasMany(OrderItem, { foreignKey: "book_id" });
 OrderItem.belongsTo(Book, { foreignKey: "book_id" });
+
+Book.hasMany(BookImage, { foreignKey: "book_id", onDelete: "CASCADE" });
+BookImage.belongsTo(Book, { foreignKey: "book_id" });
 
 User.hasMany(Cart, { foreignKey: "user_id" });
 User.hasMany(Address, { foreignKey: "user_id" });
