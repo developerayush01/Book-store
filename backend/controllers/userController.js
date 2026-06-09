@@ -51,6 +51,7 @@ const uploadProfile=async(req,res)=>{
         return res.status(500).json({message:"Server error on profile picture upload"});
     }
 }
+
 const registerUser = async(req,res)=>{
 
     try {

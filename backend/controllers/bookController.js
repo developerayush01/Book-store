@@ -1,3 +1,4 @@
+const BookImage = require("../models/bookImageModel");
 const Book=require("../models/bookModel");
 const User=require("../models/userModel");
 const {Op}=require("sequelize");
@@ -42,6 +43,76 @@ const addBook=async(req,res)=>{
         return res.status(500).json("Server error");
     }
 
+}
+
+const bookImage=async(req,res)=>{
+    try {
+        const userId=req.user.userId;
+        const {book_id}=req.body;
+
+        const files=req.files;
+
+        if(!files || files.length==0){
+            return res.status(400).json({message:"No file uploaded"});    
+        }
+
+        if(files.length>5){
+            return res.status(400).json({message:"Max 5 images are allowed"});    
+        }
+
+        const book=await Book.findOne({where:{id:book_id}});
+
+        if(!book) {
+            return res.status(404).json({message:"Book not found"});
+        }
+
+        if(book.seller_id !== userId) {
+            return res.status(403).json({message:"Not authorized to upload images for this book"});
+        }
+
+        for (i=0;i<files.length;i++)
+        {
+            const file=files[i];
+
+            try {
+                const {data,error}=await supabase
+                .storage
+                .from("book-images")
+                .upload(`${book_id}/image-${i+1}.jpg`,
+                    file.buffer,
+                    {contentType:file.mimetype}
+                );
+
+                if(error){
+                    return res.status(400).json({mesage:"Upload failed for image"});
+                    continue;
+                }
+
+                const {data:urlData}=supabase
+                .storage
+                .from("book-images")
+                .getPublicUrl(`${book_id}/image-${i+1}.jpg`);
+                const imageUrl=urlData.publicUrl;
+
+                await BookImage.create({
+                    book_id:book_id,
+                    image_url:imageUrl,
+                    order:i+1
+                });
+
+            } catch (error) {
+                return res.status(400).json({mesage:"Error Uploading Image"});
+            }
+
+            return res.status(201).json({
+            message: "Images uploaded successfully",
+            imageCount: files.length
+        });
+
+        }
+    } catch (error) {
+        return res.status(500).json({message:"Server error on image upload"});
+    }
 }
 
 const getAllBooks=async(req,res)=>{
@@ -200,5 +271,5 @@ return res.status(200).json({ message: "Book deleted successfully" });
     }
 
 }
-module.exports={addBook,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook};
+module.exports={addBook,bookImage,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook};
 
