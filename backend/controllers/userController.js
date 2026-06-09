@@ -1,7 +1,56 @@
 const User=require("../models/userModel");
+const multer=require('multer');
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 
+
+const uploadProfile=async(req,res)=>{
+    try {
+        const userId=req.user.userId;
+        file=req.file;
+
+        if(!user){
+            return res.status(403).json({message:"Login First"});
+        }
+
+         if(!file) {
+            return res.status(400).json({message:"No file uploaded"});
+        }
+
+        const {data,error}=await
+        supabase
+        .storage.from('user-profiles')
+        .upload(`${userId}/profile.jpg`,file.buffer,{contentType:file.mimetype});
+
+        if(error){
+          return res.status(400).json({message:"Upload Failed"});  
+        }
+        
+        return res.status(200).json({message:"File succesfully Uploaded"});
+
+        const{data:urlData}=supabase
+        .storage
+        .from('user-profiles')
+        .getPublicUrl(`${userId}/profile.jpg`);
+
+        const imageUrl=urlData.publicUrl;
+        const user=await User.findOne({where:{id:"userId"}});
+
+         if(!user) {
+            return res.status(404).json({message:"User not found"});
+        }
+
+        await user.update({profilePicture:imageUrl});
+
+        return res.status(200).json({
+            message: "Profile picture Updated successfully",
+            profilePictureUrl: imageUrl
+        });
+
+    } catch (error) {
+        return res.status(500).json({message:"Server error on profile picture upload"});
+    }
+}
 const registerUser = async(req,res)=>{
 
     try {
@@ -159,4 +208,4 @@ const logOut=async(req,res)=>{
     return res.status(500).json({message:"Server error on logout"});
 }
 }
-module.exports= {registerUser,loginUser,editProfile,changePassword,getProfile,logOut};
+module.exports= {registerUser,loginUser,uploadProfile,editProfile,changePassword,getProfile,logOut};
