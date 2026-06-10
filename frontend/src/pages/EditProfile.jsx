@@ -15,13 +15,17 @@ function EditProfile(){
         password:""
     });
     const [EditProfile,setEditProfile]=useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview,setimagePreview]=useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     if(!user) {
     return <p>Please login first</p>;
 }
 
 useEffect(() => {
-    handleEditClick(); // ← call this on page load
+    handleEditClick();
 }, [user]);
 
 const handleEditClick = () => {
@@ -30,7 +34,25 @@ const handleEditClick = () => {
         email: user.email,
         phone: user.phone
     });
+    
+    if(user.profilePicture){
+        setimagePreview(user.profilePicture);
+    }
 };
+
+const handleimageSelect=(e)=>{
+    const file=e.target.files[0];
+
+    if(!file){
+        return;
+    }
+}
+
+setSelectedImage(file);
+
+const preview=URL.createObjectURL(file);
+setimagePreview(preview);
+
 
 const handleUpdateProfile=async()=>{
     try {
