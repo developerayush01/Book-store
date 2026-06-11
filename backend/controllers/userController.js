@@ -1,4 +1,4 @@
-const User=require("../models/userModel");
+const {User}=require("../models/userModel");
 const multer=require('multer');
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
@@ -7,9 +7,9 @@ const jwt=require("jsonwebtoken");
 const uploadProfilePicture=async(req,res)=>{
     try {
         const userId=req.user.userId;
-        file=req.file;
+        const file=req.file;
 
-        if(!user){
+        if(!userId){
             return res.status(403).json({message:"Login First"});
         }
 
@@ -25,8 +25,6 @@ const uploadProfilePicture=async(req,res)=>{
         if(error){
           return res.status(400).json({message:"Upload Failed"});  
         }
-        
-        return res.status(200).json({message:"File succesfully Uploaded"});
 
         const{data:urlData}=supabase
         .storage
@@ -34,7 +32,7 @@ const uploadProfilePicture=async(req,res)=>{
         .getPublicUrl(`${userId}/profile.jpg`);
 
         const imageUrl=urlData.publicUrl;
-        const user=await User.findOne({where:{id:"userId"}});
+        const user=await User.findOne({where:{id:userId}});
 
          if(!user) {
             return res.status(404).json({message:"User not found"});
