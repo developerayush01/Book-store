@@ -45,7 +45,7 @@ const addBook=async(req,res)=>{
 
 }
 
-const bookImage=async(req,res)=>{
+const uploadBookImages=async(req,res)=>{
     try {
         const userId=req.user.userId;
         const {book_id}=req.body;
@@ -271,5 +271,5 @@ return res.status(200).json({ message: "Book deleted successfully" });
     }
 
 }
-module.exports={addBook,bookImage,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook};
+module.exports={addBook,uploadBookImages,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook};
 

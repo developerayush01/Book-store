@@ -40,20 +40,21 @@ const handleEditClick = () => {
     }
 };
 
-const handleimageSelect=(e)=>{
+const handleImageSelect=(e)=>{
     const file=e.target.files[0];
 
     if(!file){
         return;
     }
-}
 
 setSelectedImage(file);
+
 
 const preview=URL.createObjectURL(file);
 setimagePreview(preview);
 setError("");
 
+}
 
 const handleUpdateProfile=async()=>{
     try {
