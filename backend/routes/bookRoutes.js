@@ -1,8 +1,9 @@
 const express=require("express");
+const multer = require("multer");
 const auth=require("../middlewares/authMiddleware");
 const router=express.Router();
 const {addBook,bookImage,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook}=require("../controllers/bookController");
-
+const upload = multer({ storage: multer.memoryStorage() });
 router.post('/add-book',auth,addBook);
 router.post(
     "/upload-images",

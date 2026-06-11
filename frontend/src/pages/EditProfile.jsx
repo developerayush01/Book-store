@@ -52,43 +52,150 @@ setSelectedImage(file);
 
 const preview=URL.createObjectURL(file);
 setimagePreview(preview);
+setError("");
 
 
 const handleUpdateProfile=async()=>{
     try {
+
+        setLoading(true);
+        setError("");
+
         await axiosInstance.put("/api/users/profile/edit-profile",editFormData);
-        setUser({...user,...editFormData});
-        alert("Profile updated!");
-        navigate("/profile");
+
+        if(selectedImage){
+            const formData=new FormData();
+            formData.append("profilePicture",selectedImage);
+
+            await axiosInstance.post(
+                "/api/users/upload-profile-picture",
+                    formData,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" }
+                    }
+            )
+        }
+
+        const userRes = await axiosInstance.get("/api/users/profile");
+            setUser(userRes.data.user);
+            
+            alert("Profile updated successfully!");
+            navigate("/profile");
     } catch (error) {
-        alert("Could not update profile");
-    }
-}
+        setError(error.response?.data?.message || "Could not update profile");
+        } finally {
+            setLoading(false);
+        }
+};
 
 return (
-        <div>
+        <div style={{maxWidth: "500px", margin: "0 auto", padding: "20px"}}>
             <h2>Edit Profile</h2>
             
+            {/* Error message */}
+            {error && (
+                <div style={{color: "red", marginBottom: "10px"}}>
+                    {error}
+                </div>
+            )}
+            
+            {/* ========== PROFILE PICTURE SECTION ========== */}
+            <div style={{marginBottom: "20px", textAlign: "center"}}>
+                <h4>Profile Picture</h4>
+                
+                {/* Show preview or default avatar */}
+                {imagePreview ? (
+                    <img
+                        src={imagePreview}
+                        alt="Profile"
+                        style={{
+                            width: "150px",
+                            height: "150px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            marginBottom: "15px"
+                        }}
+                    />
+                ) : (
+                    <div style={{
+                        width: "150px",
+                        height: "150px",
+                        borderRadius: "50%",
+                        background: "#e9ecef",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "60px",
+                        margin: "0 auto 15px",
+                        color: "#6c757d"
+                    }}>
+                        {user?.name?.charAt(0).toUpperCase()}
+                    </div>
+                )}
+                
+                {/* File input */}
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    style={{marginBottom: "10px"}}
+                />
+            </div>
+            
+            {/* ========== FORM INPUTS ========== */}
             <input 
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
                 placeholder="Name"
+                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
             />
             
             <input 
                 value={editFormData.email}
                 onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
                 placeholder="Email"
+                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
             />
             
             <input 
                 value={editFormData.phone}
                 onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
                 placeholder="Phone"
+                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
             />
             
-            <button onClick={handleUpdateProfile}>Save</button>
-            <button onClick={() => navigate(-1)}>Cancel</button>
+            {/* ========== BUTTONS ========== */}
+            <button 
+                onClick={handleUpdateProfile}
+                disabled={loading}
+                style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: loading ? "#ccc" : "#007bff",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    marginBottom: "10px",
+                    cursor: loading ? "not-allowed" : "pointer"
+                }}
+            >
+                {loading ? "Saving..." : "Save"}
+            </button>
+            
+            <button 
+                onClick={() => navigate(-1)}
+                style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer"
+                }}
+            >
+                Cancel
+            </button>
         </div>
     );
 }

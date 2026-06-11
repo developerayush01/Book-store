@@ -4,7 +4,7 @@ const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 
 
-const uploadProfile=async(req,res)=>{
+const uploadProfilePicture=async(req,res)=>{
     try {
         const userId=req.user.userId;
         file=req.file;
@@ -209,4 +209,4 @@ const logOut=async(req,res)=>{
     return res.status(500).json({message:"Server error on logout"});
 }
 }
-module.exports= {registerUser,loginUser,uploadProfile,editProfile,changePassword,getProfile,logOut};
+module.exports= {registerUser,loginUser,uploadProfilePicture,editProfile,changePassword,getProfile,logOut};

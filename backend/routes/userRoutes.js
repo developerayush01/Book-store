@@ -2,8 +2,10 @@ const express=require("express");
 const multer = require("multer");
 const auth=require("../middlewares/authMiddleware");
 const router=express.Router();
-const {registerUser,loginUser,getProfile,logOut, editProfile, changePassword}=require("../controllers/userController");
+const {registerUser,loginUser,getProfile,logOut, editProfile, changePassword,uploadProfilePicture}=require("../controllers/userController");
 
+
+const upload = multer({ storage: multer.memoryStorage() });
 router.post("/register",registerUser);
 router.post("/login",loginUser);
 router.get("/profile",auth,getProfile);
@@ -12,9 +14,9 @@ router.put("/profile/edit-profile/change-password",auth,changePassword);
 router.post("/logout",auth,logOut);
 router.post(
     "/upload-profile-picture",
-    auth,                           
+    auth,                          
     upload.single("profilePicture"), 
-    uploadProfilePicture           
-);
+    uploadProfilePicture          
+);           
 
 module.exports=router;
