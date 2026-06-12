@@ -26,7 +26,7 @@ function Home() {
       { book && book.length === 0 ? (
     <p>No books available</p>
 ) : (
-      book && book.filter(b => b.seller_id !== user.id).map((book) => (
+      book && book.filter(b => b.seller_id !== user?.id).map((book) => (
         <>
         <div key={book.id}>
           <h3>{book.title}</h3>

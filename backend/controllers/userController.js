@@ -1,4 +1,5 @@
-const {User}=require("../models/userModel");
+const supabase = require("../config/supabase");
+const {User}=require("../models");
 const multer=require('multer');
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
@@ -23,8 +24,12 @@ const uploadProfilePicture=async(req,res)=>{
         .upload(`${userId}/profile.jpg`,file.buffer,{contentType:file.mimetype});
 
         if(error){
-          return res.status(400).json({message:"Upload Failed"});  
-        }
+  return res.status(400).json({
+      message: "Upload Failed",
+      supabaseError: error.message,  // ← ADD THIS
+      errorDetails: error            // ← ADD THIS
+  });  
+}
 
         const{data:urlData}=supabase
         .storage
