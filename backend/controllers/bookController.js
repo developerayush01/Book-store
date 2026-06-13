@@ -1,3 +1,4 @@
+const supabase = require("../config/supabase");
 const BookImage = require("../models/bookImageModel");
 const Book=require("../models/bookModel");
 const User=require("../models/userModel");
@@ -45,77 +46,90 @@ const addBook=async(req,res)=>{
 
 }
 
-const uploadBookImages=async(req,res)=>{
+const uploadBookImages = async(req, res) => {
     try {
         console.log("uploadBookImages called");
-        console.log("Files:", req.files);
-        console.log("book_id:", req.body.book_id);
-        console.log("userId:", req.user?.userId);
-        const userId=req.user.userId;
-        const {book_id}=req.body;
+        console.log("req.files:", req.files);
+        console.log("req.body:", req.body);
+        
+        const userId = req.user.userId;
+        const files = req.files;
+        const { book_id } = req.body;
 
-        const files=req.files;
-
-        if(!files || files.length==0){
-            return res.status(400).json({message:"No file uploaded"});    
+        if(!files || files.length === 0) {
+            return res.status(400).json({message:"No files uploaded"});
         }
 
-        if(files.length>5){
-            return res.status(400).json({message:"Max 5 images are allowed"});    
+        if(files.length > 5) {
+            return res.status(400).json({message:"Maximum 5 images allowed"});
         }
 
-        const book=await Book.findOne({where:{id:book_id}});
-
+        const book = await Book.findOne({ where: { id: book_id } });
+        
         if(!book) {
             return res.status(404).json({message:"Book not found"});
         }
 
         if(book.seller_id !== userId) {
-            return res.status(403).json({message:"Not authorized to upload images for this book"});
+            return res.status(403).json({message:"Not authorized"});
         }
 
-        for (i=0;i<files.length;i++)
-        {
-            const file=files[i];
-
+        // Upload each image
+        for(let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
             try {
-                const {data,error}=await supabase
-                .storage
-                .from("book-images")
-                .upload(`${book_id}/image-${i+1}.jpg`,
-                    file.buffer,
-                    {contentType:file.mimetype}
-                );
+                console.log(`Uploading image ${i+1}:`, file.originalname);
+                
+                const { data, error } = await supabase
+                    .storage
+                    .from("book-images")
+                    .upload(
+                        `books/${book_id}/image-${i+1}.jpg`,
+                        file.buffer,
+                        { contentType: file.mimetype, upsert: true }
+                    );
 
-                if(error){
-                    return res.status(400).json({mesage:"Upload failed for image"});
-                    continue;
+                if(error) {
+                    console.log(`Image ${i+1} upload error:`, error);
+                    return res.status(400).json({
+                        message: "Error Uploading Image",
+                        error: error.message,  // ← SHOW ACTUAL ERROR
+                        imageNumber: i+1
+                    });
                 }
 
-                const {data:urlData}=supabase
-                .storage
-                .from("book-images")
-                .getPublicUrl(`${book_id}/image-${i+1}.jpg`);
-                const imageUrl=urlData.publicUrl;
+                const { data: urlData } = supabase
+                    .storage
+                    .from("book-images")
+                    .getPublicUrl(`books/${book_id}/image-${i+1}.jpg`);
 
                 await BookImage.create({
-                    book_id:book_id,
-                    image_url:imageUrl,
-                    order:i+1
+                    book_id: book_id,
+                    image_url: urlData.publicUrl,
+                    order: i + 1
                 });
 
-            } catch (error) {
-                return res.status(400).json({mesage:"Error Uploading Image"});
+                console.log(`Image ${i+1} uploaded successfully`);
+
+            } catch(error) {
+                console.log(`Error processing image ${i+1}:`, error.message);
+                return res.status(500).json({
+                    message: "Error processing image",
+                    error: error.message,
+                    imageNumber: i+1
+                });
             }
-
-            return res.status(201).json({
-            message: "Images uploaded successfully",
-            imageCount: files.length
-        });
-
         }
+
+        return res.status(201).json({message:"Images uploaded successfully"});
+
     } catch (error) {
-        return res.status(500).json({message:"Server error on image upload"});
+        console.log("Upload controller error:", error.message);
+        return res.status(500).json({
+            message:"Server error on image upload",
+            error: error.message  // ← SHOW ACTUAL ERROR
+        });
     }
 }
 
