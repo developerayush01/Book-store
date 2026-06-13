@@ -114,7 +114,7 @@ return (
                         <h3>{book.title}</h3>
           <p>{book.author}</p>
           <p>{book.price}</p>
-          <button onClick={()=>handleEdit(book)}>Edit</button>
+          <button onClick={() => navigate(`/edit-book//${book.id}`)}>Edit</button>
     <button onClick={()=>handleDeleteBook(book.id)}>Delete</button>
     <br />
     </div>

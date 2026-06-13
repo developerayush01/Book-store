@@ -7,6 +7,7 @@ import EditProfile from "./pages/EditProfile";
 import ChangePassword from "./pages/ChangePassword";
 import Book from "./pages/Book";
 import AddBook from "./pages/AddBook";
+import EditBook from "./pages/EditBook";
 import MyBook from "./pages/MyBook";
 import MyOrder from "./pages/MyOrder";
 import Cart from "./pages/Cart";
@@ -28,6 +29,7 @@ function App() {
 <Route path="/books/:id" element={<Book/>}/>
 <Route path="/my-books" element={<MyBook/>}/>
 <Route path="/add-book" element={<AddBook/>}/>
+<Route path="/edit-book/:bookId" element={<EditBook/>}/>
 <Route path="/my-orders" element={<MyOrder/>}/>
 <Route path="/my-cart" element={<Cart/>}/>
 <Route path="/checkout" element={<Checkout/>}/>

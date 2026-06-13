@@ -18,25 +18,31 @@ const uploadProfilePicture=async(req,res)=>{
             return res.status(400).json({message:"No file uploaded"});
         }
 
+        try {
+            await supabase
+                .storage
+                .from('user-profiles')
+                .remove([`${userId}/profile.jpg`]);
+            console.log("Old file deleted");
+        } catch(deleteError) {
+            console.log("Old file delete error (ok if not exists):", deleteError);
+        }
+        
         const {data,error}=await
         supabase
         .storage.from('user-profiles')
-        .upload(`${userId}/profile.jpg`,file.buffer,{contentType:file.mimetype});
+        .upload(`${userId}/profile.jpg`,file.buffer,{contentType:file.mimetype,upsert:true});
 
         if(error){
-  return res.status(400).json({
-      message: "Upload Failed",
-      supabaseError: error.message,  // ← ADD THIS
-      errorDetails: error            // ← ADD THIS
-  });  
+  return res.status(400).json({message: "Upload Failed"});  
 }
 
-        const{data:urlData}=supabase
-        .storage
-        .from('user-profiles')
-        .getPublicUrl(`${userId}/profile.jpg`);
+const { data: urlData } = supabase
+    .storage
+    .from('user-profiles')
+    .getPublicUrl(`${userId}/profile.jpg?t=${Date.now()}`);
 
-        const imageUrl=urlData.publicUrl;
+        const imageUrl = urlData.publicUrl + `?t=${Date.now()}`;
         const user=await User.findOne({where:{id:userId}});
 
          if(!user) {

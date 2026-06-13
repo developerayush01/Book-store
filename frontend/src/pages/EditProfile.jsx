@@ -93,18 +93,18 @@ return (
         <div style={{maxWidth: "500px", margin: "0 auto", padding: "20px"}}>
             <h2>Edit Profile</h2>
             
-            {/* Error message */}
+            
             {error && (
                 <div style={{color: "red", marginBottom: "10px"}}>
                     {error}
                 </div>
             )}
             
-            {/* ========== PROFILE PICTURE SECTION ========== */}
+            
             <div style={{marginBottom: "20px", textAlign: "center"}}>
                 <h4>Profile Picture</h4>
                 
-                {/* Show preview or default avatar */}
+                
                 {imagePreview ? (
                     <img
                         src={imagePreview}
