@@ -40,10 +40,6 @@ function EditBook() {
     const fetchBookDetails = async () => {
       try {
         const response = await axiosInstance.get(`/api/books/${bookId}`);
-        console.log("Full response:", response);
-    console.log("response.data:", response.data);
-    console.log("response.data.book:", response.data.book);
-    console.log("response.data.books:", response.data.books);
         const book=response.data;
         setEditFormData({
                 title: book.title,
@@ -109,7 +105,7 @@ function EditBook() {
             
             // STEP 1: Update book details
             await axiosInstance.put(
-                `/api/books/edit/${bookId}`,
+                `/api/books/edit-book/${bookId}`,
                 editFormData
             );
             

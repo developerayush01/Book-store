@@ -47,6 +47,10 @@ const addBook=async(req,res)=>{
 
 const uploadBookImages=async(req,res)=>{
     try {
+        console.log("uploadBookImages called");
+        console.log("Files:", req.files);
+        console.log("book_id:", req.body.book_id);
+        console.log("userId:", req.user?.userId);
         const userId=req.user.userId;
         const {book_id}=req.body;
 
