@@ -40,7 +40,11 @@ function EditBook() {
     const fetchBookDetails = async () => {
       try {
         const response = await axiosInstance.get(`/api/books/${bookId}`);
-        setBook(response.data.books);
+        console.log("Full response:", response);
+    console.log("response.data:", response.data);
+    console.log("response.data.book:", response.data.book);
+    console.log("response.data.books:", response.data.books);
+        const book=response.data;
         setEditFormData({
                 title: book.title,
                 author: book.author,
