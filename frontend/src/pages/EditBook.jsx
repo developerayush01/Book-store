@@ -66,11 +66,7 @@ function EditBook() {
 
      const handleImageSelect = (e) => {
     const newFiles = Array.from(e.target.files);
-    
-    console.log("New files selected:", newFiles.length);
-    
-    // ADD to existing, don't REPLACE
-    const allFiles = [...selectedImages, ...newFiles];  // ← COMBINE!
+    const allFiles = [...selectedImages, ...newFiles];
     
     const totalImages = bookImages.length + allFiles.length;
     if(totalImages > 5) {

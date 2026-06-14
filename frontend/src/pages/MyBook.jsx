@@ -119,65 +119,10 @@ return (
     <br />
     </div>
   ))}
-            <button onClick={()=>{setshowBookForm(true)}}>Add Book</button>
+            <button onClick={()=>navigate("/add-book")}>Add Book</button>
   </>
 
 )}
-
-            {showBookForm && (
-              <div>
-                <p>Add New Book</p>
-                <input 
-    value={AddBookFormData.title}
-    onChange={(e) => setAddBookFormData({ ...AddBookFormData, title: e.target.value })}
-    placeholder="Enter title"/>
-    <input 
-    value={AddBookFormData.author}
-    onChange={(e) => setAddBookFormData({ ...AddBookFormData, author: e.target.value })}
-    placeholder="Enter author"/>
-    <input 
-    value={AddBookFormData.price}
-    onChange={(e) => setAddBookFormData({ ...AddBookFormData, price: e.target.value })}
-    placeholder="Enter price"/>
-    <input 
-    value={AddBookFormData.condition}
-    onChange={(e) => setAddBookFormData({ ...AddBookFormData, condition: e.target.value })}
-    placeholder="Enter condition"/>
-    <input 
-    value={AddBookFormData.description}
-    onChange={(e) => setAddBookFormData({ ...AddBookFormData, description: e.target.value })}
-    placeholder="Enter description"/>
-    <button onClick={()=>{addBook(AddBookFormData)}}>Save</button>
-    <button onClick={()=>{setshowBookForm(false)}}>Cancel</button>
-              </div>
-            )}
-
-            {showEditForm && (
-              <div>
-                <input 
-    value={EditFormData.title}
-    onChange={(e) => setEditFormData({ ...EditFormData, title: e.target.value })}
-    placeholder="Enter title"/>
-    <input 
-    value={EditFormData.author}
-    onChange={(e) => setEditFormData({ ...EditFormData, author: e.target.value })}
-    placeholder="Enter author"/>
-    <input 
-    value={EditFormData.price}
-    onChange={(e) => setEditFormData({ ...EditFormData, price: e.target.value })}
-    placeholder="Enter price"/>
-    <input 
-    value={EditFormData.condition}
-    onChange={(e) => setEditFormData({ ...EditFormData, condition: e.target.value })}
-    placeholder="Enter condition"/>
-    <input 
-    value={EditFormData.description}
-    onChange={(e) => setEditFormData({ ...EditFormData, description: e.target.value })}
-    placeholder="Enter description"/>
-    <button onClick={handleUpdate}>Save</button>
-    <button onClick={()=>{setshowEditForm(false)}}>Cancel</button>
-              </div>
-            )}
             </div>
 );
 }
