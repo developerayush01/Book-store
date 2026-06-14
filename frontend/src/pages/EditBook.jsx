@@ -65,21 +65,25 @@ function EditBook() {
     };
 
      const handleImageSelect = (e) => {
-        const files = Array.from(e.target.files);
-        
-        // Check total images (existing + new)
-        const totalImages = bookImages.length + files.length;
-        if(totalImages > 5) {
-            setError(`Maximum 5 images allowed. You have ${bookImages.length} existing images.`);
-            return;
-        }
-        
-        setSelectedImages(files);
-        
-        const previews = files.map(file => URL.createObjectURL(file));
-        setImagePreviews(previews);
-        setError("");
-    };
+    const newFiles = Array.from(e.target.files);
+    
+    console.log("New files selected:", newFiles.length);
+    
+    // ADD to existing, don't REPLACE
+    const allFiles = [...selectedImages, ...newFiles];  // ← COMBINE!
+    
+    const totalImages = bookImages.length + allFiles.length;
+    if(totalImages > 5) {
+        setError(`Maximum 5 images allowed. You have ${bookImages.length} existing images.`);
+        return;
+    }
+    
+    setSelectedImages(allFiles);
+    
+    const previews = allFiles.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
+    setError("");
+};
 
     const handleDeleteExistingImage = async(imageId) => {
         try {
