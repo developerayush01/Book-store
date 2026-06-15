@@ -78,7 +78,7 @@ function AddBook() {
             
             // ========== STEP 1: CREATE BOOK ==========
             const bookRes = await axiosInstance.post("/api/books/add-book", bookFormData);
-            const bookId = bookRes.data.id;
+            const bookId = bookRes.data.book.id;
             
             console.log("Book created:", bookId);
             

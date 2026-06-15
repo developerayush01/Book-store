@@ -37,7 +37,7 @@ const addBook=async(req,res)=>{
             seller_id
         });
 
-        return res.status(201).json({message:"Book added succesfully"});
+        return res.status(201).json({message:"Book added succesfully",book:book});
 
     } catch (error) {
         
