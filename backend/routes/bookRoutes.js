@@ -22,6 +22,11 @@ router.delete(
     auth,
     deleteBookImage
 );
+router.delete(
+    "/delete-cover/:bookId",  // ← ADD THIS!
+    auth,
+    deleteCoverImage
+);
 router.get('/get-all',getAllBooks);
 router.put('/edit-book/:id',auth,editBook);
 router.get('/my-books',auth,getMyBooks);

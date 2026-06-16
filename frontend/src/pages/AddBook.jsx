@@ -14,9 +14,11 @@ function AddBook() {
         condition: "",
         description: ""
     });
-    const [bookImages, setBookImages] = useState([]);
-    const [selectedImages, setSelectedImages] = useState([]);
-    const [imagePreviews, setImagePreviews] = useState([]);
+    
+    // 5 image slots
+    const [imageSlots, setImageSlots] = useState([null, null, null, null, null]);
+    const [coverImage, setCoverImage] = useState(null);
+    const [coverImagePreview, setCoverImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -29,31 +31,56 @@ function AddBook() {
         });
     };
 
-    
-    const handleImageSelect = (e) => {
-    const newFiles = Array.from(e.target.files);
-    const allFiles = [...selectedImages, ...newFiles];
-    
-    const totalImages = bookImages.length + allFiles.length;
-    if(totalImages > 5) {
-        setError(`Maximum 5 images allowed. You have ${bookImages.length} existing images.`);
-        return;
-    }
-    
-    setSelectedImages(allFiles);
-    
-    const previews = allFiles.map(file => URL.createObjectURL(file));
-    setImagePreviews(previews);
-    setError("");
-};
-
-    // ========== DELETE IMAGE ==========
-    const handleDeleteImage = (index) => {
-        const updatedImages = selectedImages.filter((_, i) => i !== index);
-        setSelectedImages(updatedImages);
+    // ========== HANDLE COVER IMAGE SELECTION ==========
+    const handleCoverImageSelect = (e) => {
+        const file = e.target.files[0];
         
-        const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
-        setImagePreviews(updatedPreviews);
+        if(!file) return;
+        
+        const maxSize = 5 * 1024 * 1024;
+        if(file.size > maxSize) {
+            setError("Cover image too large. Maximum 5MB");
+            return;
+        }
+        
+        setCoverImage(file);
+        
+        const preview = URL.createObjectURL(file);
+        setCoverImagePreview(preview);
+        
+        setError("");
+    };
+
+    // ========== DELETE COVER IMAGE ==========
+    const handleDeleteCoverImage = () => {
+        setCoverImage(null);
+        setCoverImagePreview(null);
+    };
+
+    // ========== HANDLE IMAGE SELECT FOR SLOT ==========
+    const handleImageSelectForSlot = (slotIndex) => (e) => {
+        const file = e.target.files[0];
+        
+        if(!file) return;
+        
+        const maxSize = 5 * 1024 * 1024;
+        if(file.size > maxSize) {
+            setError("File too large. Maximum 5MB");
+            return;
+        }
+        
+        const newSlots = [...imageSlots];
+        newSlots[slotIndex] = file;
+        setImageSlots(newSlots);
+        
+        setError("");
+    };
+
+    // ========== DELETE IMAGE FROM SLOT ==========
+    const handleDeleteImage = (slotIndex) => {
+        const newSlots = [...imageSlots];
+        newSlots[slotIndex] = null;
+        setImageSlots(newSlots);
     };
 
     // ========== ADD BOOK WITH IMAGES ==========
@@ -69,8 +96,9 @@ function AddBook() {
                 return;
             }
             
-            // At least one image recommended
-            if(selectedImages.length === 0) {
+            // Check at least one image is selected
+            const hasImages = imageSlots.some(slot => slot !== null);
+            if(!hasImages) {
                 setError("Please select at least one image");
                 setLoading(false);
                 return;
@@ -82,15 +110,35 @@ function AddBook() {
             
             console.log("Book created:", bookId);
             
-            // ========== STEP 2: UPLOAD IMAGES ==========
-            if(selectedImages.length > 0) {
+            // ========== STEP 2: UPLOAD COVER IMAGE (if selected) ==========
+            if(coverImage) {
                 const formData = new FormData();
-                
-                selectedImages.forEach(image => {
-                    formData.append("bookImages", image);
-                });
-                
+                formData.append("coverImage", coverImage);
                 formData.append("book_id", bookId);
+                
+                await axiosInstance.post(
+                    "/api/books/upload-cover",
+                    formData,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" }
+                    }
+                );
+                
+                console.log("Cover uploaded");
+            }
+            
+            // ========== STEP 3: UPLOAD DETAIL IMAGES TO SLOTS ==========
+            for(let slotIndex = 0; slotIndex < imageSlots.length; slotIndex++) {
+                const file = imageSlots[slotIndex];
+                
+                if(!file) continue;  // Skip empty slots
+                
+                const slot = slotIndex + 1;  // 1-5
+                
+                const formData = new FormData();
+                formData.append("bookImages", file);
+                formData.append("book_id", bookId);
+                formData.append("slot", slot);
                 
                 await axiosInstance.post(
                     "/api/books/upload-images",
@@ -100,10 +148,10 @@ function AddBook() {
                     }
                 );
                 
-                console.log("Images uploaded");
+                console.log(`Image for slot ${slot} uploaded`);
             }
             
-            alert("Book added with images!");
+            alert("Book added successfully!");
             navigate("/my-books");
             
         } catch(error) {
@@ -162,47 +210,89 @@ function AddBook() {
                 placeholder="Description"
                 value={bookFormData.description}
                 onChange={handleInputChange}
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px", minHeight: "100px"}}
+                style={{display: "block", width: "100%", padding: "10px", marginBottom: "20px", minHeight: "100px"}}
             />
             
-            {/* IMAGE UPLOAD */}
-            <label style={{display: "block", marginBottom: "10px"}}>
-                <strong>Upload Book Images (max 5):</strong>
-            </label>
-            <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageSelect}
-                style={{display: "block", marginBottom: "15px"}}
-            />
-            
-            {/* IMAGE PREVIEWS */}
-            {imagePreviews.length > 0 && (
-                <div style={{marginBottom: "20px"}}>
-                    <h4>Image Preview ({imagePreviews.length}/5):</h4>
-                    <div style={{display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px"}}>
-                        {imagePreviews.map((preview, index) => (
-                            <div
-                                key={index}
+            {/* ========== COVER IMAGE SECTION ========== */}
+            <div style={{marginBottom: "20px", padding: "15px", border: "2px solid #007bff", borderRadius: "5px"}}>
+                <h3>Cover Image (Optional)</h3>
+                
+                {coverImagePreview ? (
+                    <>
+                        <img
+                            src={coverImagePreview}
+                            alt="Cover"
+                            style={{
+                                width: "150px",
+                                height: "200px",
+                                objectFit: "cover",
+                                marginBottom: "10px",
+                                borderRadius: "5px"
+                            }}
+                        />
+                        
+                        <div>
+                            <button
+                                onClick={handleDeleteCoverImage}
                                 style={{
-                                    position: "relative",
-                                    border: "1px solid #ccc",
+                                    background: "red",
+                                    color: "white",
+                                    border: "none",
+                                    padding: "8px 12px",
                                     borderRadius: "5px",
-                                    overflow: "hidden"
+                                    cursor: "pointer",
+                                    marginRight: "10px"
                                 }}
                             >
+                                Delete Cover
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <p style={{color: "#666"}}>No cover image selected</p>
+                )}
+                
+                <label style={{display: "block", marginTop: "10px"}}>
+                    <strong>Upload Cover:</strong>
+                </label>
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverImageSelect}
+                    style={{marginTop: "5px"}}
+                />
+            </div>
+            
+            {/* ========== 5 IMAGE SLOTS ========== */}
+            <h3>Book Images (5 Slots - Select at least 1)</h3>
+            <div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "15px", marginBottom: "20px"}}>
+                {imageSlots.map((image, slotIndex) => (
+                    <div
+                        key={slotIndex}
+                        style={{
+                            border: "2px solid #ddd",
+                            borderRadius: "5px",
+                            aspectRatio: "3/4",
+                            position: "relative",
+                            overflow: "hidden"
+                        }}
+                    >
+                        {image ? (
+                            // IMAGE SELECTED
+                            <>
                                 <img
-                                    src={preview}
-                                    alt={`Preview ${index + 1}`}
+                                    src={URL.createObjectURL(image)}
+                                    alt={`Slot ${slotIndex + 1}`}
                                     style={{
                                         width: "100%",
-                                        height: "120px",
+                                        height: "100%",
                                         objectFit: "cover"
                                     }}
                                 />
+                                
+                                {/* Delete button */}
                                 <button
-                                    onClick={() => handleDeleteImage(index)}
+                                    onClick={() => handleDeleteImage(slotIndex)}
                                     style={{
                                         position: "absolute",
                                         top: "5px",
@@ -214,16 +304,52 @@ function AddBook() {
                                         width: "30px",
                                         height: "30px",
                                         cursor: "pointer",
-                                        fontSize: "18px"
+                                        fontSize: "16px"
                                     }}
                                 >
                                     ✕
                                 </button>
-                            </div>
-                        ))}
+                                
+                                {/* Slot number */}
+                                <div style={{
+                                    position: "absolute",
+                                    bottom: "5px",
+                                    left: "5px",
+                                    background: "rgba(0,0,0,0.5)",
+                                    color: "white",
+                                    padding: "2px 8px",
+                                    borderRadius: "3px",
+                                    fontSize: "12px"
+                                }}>
+                                    Slot {slotIndex + 1}
+                                </div>
+                            </>
+                        ) : (
+                            // EMPTY SLOT - UPLOAD
+                            <label style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "100%",
+                                height: "100%",
+                                cursor: "pointer",
+                                background: "#f5f5f5",
+                                color: "#666"
+                            }}>
+                                <span style={{fontSize: "24px", marginBottom: "5px"}}>+</span>
+                                <span style={{fontSize: "12px", textAlign: "center"}}>Slot {slotIndex + 1}</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageSelectForSlot(slotIndex)}
+                                    style={{display: "none"}}
+                                />
+                            </label>
+                        )}
                     </div>
-                </div>
-            )}
+                ))}
+            </div>
             
             {/* BUTTONS */}
             <button
@@ -245,7 +371,7 @@ function AddBook() {
             </button>
             
             <button
-                onClick={() => navigate("/my-books")}
+                onClick={() => navigate("/")}
                 style={{
                     width: "100%",
                     padding: "12px",

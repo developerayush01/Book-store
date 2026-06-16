@@ -38,8 +38,8 @@ const [coverImagePreview, setCoverImagePreview] = useState(null);
         try {
             const response = await axiosInstance.get(`/api/books/${bookId}`);
             const book = response.data;
-
             
+            console.log("book Details:",book)
             setEditFormData({
                 title: book.title || "",
                 author: book.author || "",
@@ -47,9 +47,12 @@ const [coverImagePreview, setCoverImagePreview] = useState(null);
                 condition: book.condition || "",
                 description: book.description || ""
             });
+            
             if(book.coverImage) {
-    setCoverImagePreview(book.coverImage);
-}
+            console.log("Cover image:", book.coverImage);
+            setCoverImagePreview(book.coverImage);
+        }
+        
             // Fill image slots from existing images
             if(book.BookImages) {
                 const slots = [null, null, null, null, null];
@@ -60,8 +63,6 @@ const [coverImagePreview, setCoverImagePreview] = useState(null);
                 });
                 setImageSlots(slots);
             }
-
-            
         } catch(error) {
             setError("Could not load book details");
         }

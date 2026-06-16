@@ -230,7 +230,15 @@ const getAllBooks=async(req,res)=>{
             return res.status(404).json({message:"Book not found"});
         }
         
-        return res.status(200).json(book);
+         const coverUrl = supabase
+            .storage
+            .from("book-covers")
+            .getPublicUrl(`${book.id}/cover.jpg`);
+        
+        return res.status(200).json({
+            ...book.toJSON(),
+            coverImage: coverUrl.data.publicUrl  // ← ADD THIS!
+        });
     } catch(error) {
         return res.status(500).json({message:"Server error"});
     }
