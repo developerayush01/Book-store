@@ -2,14 +2,25 @@ const express=require("express");
 const multer = require("multer");
 const auth=require("../middlewares/authMiddleware");
 const router=express.Router();
-const {addBook,uploadBookImages,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook}=require("../controllers/bookController");
+const {addBook,uploadBookImages,uploadCoverImage,deleteCoverImage,deleteBookImage,getAllBooks,getBookbyId,editBook,getMyBooks,getBooksBySeller,deleteBook}=require("../controllers/bookController");
 const upload = multer({ storage: multer.memoryStorage() });
 router.post('/add-book',auth,addBook);
 router.post(
     "/upload-images",
-    auth,                          
-    upload.array("bookImages", 5), 
-    uploadBookImages              
+    auth,
+    upload.single("bookImages"),
+    uploadBookImages
+);
+router.post(
+    "/upload-cover",
+    auth,
+    upload.single("coverImage"),
+    uploadCoverImage
+);
+router.delete(
+    "/delete-image/:imageId",
+    auth,
+    deleteBookImage
 );
 router.get('/get-all',getAllBooks);
 router.put('/edit-book/:id',auth,editBook);

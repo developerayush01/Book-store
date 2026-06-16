@@ -1,61 +1,73 @@
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
-import {useAuth} from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, useParams } from "react-router-dom";
 
 function EditBook() {
-    const [showEditForm,setshowEditForm]=useState(false);
-    const [EditBook,setEditBook]=useState(null);
-    const [editFormData,setEditFormData]=useState({
-      title: "",
-    author: "",
-    price: "",
-    condition: "",
-    description: ""
+    const { bookId } = useParams();
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    
+    const [editFormData, setEditFormData] = useState({
+        title: "",
+        author: "",
+        price: "",
+        condition: "",
+        description: ""
     });
-    const [bookImages, setBookImages] = useState([]);
-    const [selectedImages, setSelectedImages] = useState([]);
-    const [imagePreviews, setImagePreviews] = useState([]);
-      const [loading, setLoading] = useState(false);
+    
+    // 5 image slots
+    const [imageSlots, setImageSlots] = useState([null, null, null, null, null]);
+    const [newImages, setNewImages] = useState({});  // {slotIndex: file}
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const {user}=useAuth();
-   const { bookId } = useParams();
+    const [coverImage, setCoverImage] = useState(null);
+const [coverImagePreview, setCoverImagePreview] = useState(null);
 
-  useEffect(() => {
-    if(!user) {
-        navigate("/login");
-    }
-}, [user,navigate]);
-
- useEffect(() => {
+    // ========== FETCH BOOK DETAILS ==========
+    useEffect(() => {
         if(!user) {
             navigate("/login");
             return;
         }
+        
         fetchBookDetails();
     }, [bookId, user, navigate]);
 
-    const fetchBookDetails = async () => {
-      try {
-        const response = await axiosInstance.get(`/api/books/${bookId}`);
-        const book=response.data;
-        setEditFormData({
-                title: book.title,
-                author: book.author,
-                price: book.price,
-                condition: book.condition,
-                description: book.description
+    const fetchBookDetails = async() => {
+        try {
+            const response = await axiosInstance.get(`/api/books/${bookId}`);
+            const book = response.data;
+
+            
+            setEditFormData({
+                title: book.title || "",
+                author: book.author || "",
+                price: book.price || "",
+                condition: book.condition || "",
+                description: book.description || ""
             });
+            if(book.coverImage) {
+    setCoverImagePreview(book.coverImage);
+}
+            // Fill image slots from existing images
             if(book.BookImages) {
-                setBookImages(book.BookImages);
+                const slots = [null, null, null, null, null];
+                book.BookImages.forEach(img => {
+                    if(img.order <= 5) {
+                        slots[img.order - 1] = img;  // order is 1-5, array is 0-4
+                    }
+                });
+                setImageSlots(slots);
             }
-      } catch (error) {
-        setError(error.response.data.message || "Something went wrong");
-      }
+
+            
+        } catch(error) {
+            setError("Could not load book details");
+        }
     };
 
+    // ========== HANDLE FORM INPUT ==========
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setEditFormData({
@@ -64,40 +76,82 @@ function EditBook() {
         });
     };
 
-     const handleImageSelect = (e) => {
-    const newFiles = Array.from(e.target.files);
-    const allFiles = [...selectedImages, ...newFiles];
+    // ========== HANDLE IMAGE SELECT FOR EMPTY SLOT ==========
+    const handleImageSelectForSlot = (slotIndex) => (e) => {
+        const file = e.target.files[0];
+        
+        if(!file) return;
+        
+        const maxSize = 5 * 1024 * 1024;
+        if(file.size > maxSize) {
+            setError("File too large. Maximum 5MB");
+            return;
+        }
+        
+        // Update newImages object
+        setNewImages({
+            ...newImages,
+            [slotIndex]: file
+        });
+        
+        setError("");
+    };
+
+    const handleCoverImageSelect = (e) => {
+    const file = e.target.files[0];
     
-    const totalImages = bookImages.length + allFiles.length;
-    if(totalImages > 5) {
-        setError(`Maximum 5 images allowed. You have ${bookImages.length} existing images.`);
+    if(!file) return;
+    
+    const maxSize = 5 * 1024 * 1024;
+    if(file.size > maxSize) {
+        setError("Cover image too large. Maximum 5MB");
         return;
     }
     
-    setSelectedImages(allFiles);
+    setCoverImage(file);
     
-    const previews = allFiles.map(file => URL.createObjectURL(file));
-    setImagePreviews(previews);
+    const preview = URL.createObjectURL(file);
+    setCoverImagePreview(preview);
+    
     setError("");
 };
 
-    const handleDeleteExistingImage = async(imageId) => {
+const handleDeleteCoverImage = async() => {
+    try {
+        await axiosInstance.delete(`/api/books/delete-cover/${bookId}`);
+        setCoverImagePreview(null);
+    } catch(error) {
+        alert("Could not delete cover image");
+    }
+};
+
+    // ========== DELETE EXISTING IMAGE ==========
+    const handleDeleteExistingImage = async(slotIndex) => {
         try {
-            await axiosInstance.delete(`/api/books/delete-image/${imageId}`);
-            setBookImages(bookImages.filter(img => img.id !== imageId));
+            const image = imageSlots[slotIndex];
+            
+            if(!image || !image.id) return;
+            
+            // Delete from backend
+            await axiosInstance.delete(`/api/books/delete-image/${image.id}`);
+            
+            // Clear slot
+            const newSlots = [...imageSlots];
+            newSlots[slotIndex] = null;
+            setImageSlots(newSlots);
         } catch(error) {
             alert("Could not delete image");
         }
     };
 
-     const handleDeleteNewImage = (index) => {
-        const updatedImages = selectedImages.filter((_, i) => i !== index);
-        setSelectedImages(updatedImages);
-        
-        const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
-        setImagePreviews(updatedPreviews);
+    // ========== DELETE NEW IMAGE (before save) ==========
+    const handleDeleteNewImage = (slotIndex) => {
+        const updated = {...newImages};
+        delete updated[slotIndex];
+        setNewImages(updated);
     };
 
+    // ========== UPDATE BOOK ==========
     const handleUpdate = async() => {
         try {
             setLoading(true);
@@ -111,14 +165,38 @@ function EditBook() {
             
             console.log("Book updated");
             
-            // STEP 2: Upload new images
-            if(selectedImages.length > 0) {
+            if(coverImage) {
+    const formData = new FormData();
+    formData.append("coverImage", coverImage);
+    formData.append("book_id", bookId);
+    
+    await axiosInstance.post(
+        "/api/books/upload-cover",
+        formData,
+        {
+            headers: { "Content-Type": "multipart/form-data" }
+        }
+    );
+    
+    console.log("Cover uploaded");
+}
+
+            // STEP 2: Upload new images to their slots
+            for(const slotIndex in newImages) {
+                const file = newImages[slotIndex];
+                const slot = parseInt(slotIndex) + 1;  // 1-5
+                 console.log(`Uploading slot ${slot}:`, file.name);
+    console.log("Slot value:", slot);
+    console.log("BookId:", bookId);
+
                 const formData = new FormData();
-                selectedImages.forEach(image => {
-                    formData.append("bookImages", image);
-                });
+                formData.append("bookImages", file);
                 formData.append("book_id", bookId);
-                
+                formData.append("slot", slot);
+                // Check FormData has the file
+    console.log("FormData has file?", formData.has("bookImages"));
+    console.log("FormData keys:", Array.from(formData.keys()));
+
                 await axiosInstance.post(
                     "/api/books/upload-images",
                     formData,
@@ -127,7 +205,7 @@ function EditBook() {
                     }
                 );
                 
-                console.log("Images uploaded");
+                console.log(`Image for slot ${slot} uploaded`);
             }
             
             alert("Book updated successfully!");
@@ -140,14 +218,13 @@ function EditBook() {
         }
     };
 
-
     return (
         <div style={{maxWidth: "600px", margin: "0 auto", padding: "20px"}}>
             <h2>Edit Book</h2>
             
             {error && <div style={{color: "red", marginBottom: "10px"}}>{error}</div>}
             
-            {/* FORM INPUTS */}
+            {/* ========== FORM INPUTS ========== */}
             <input
                 type="text"
                 name="title"
@@ -189,23 +266,87 @@ function EditBook() {
                 value={editFormData.description}
                 onChange={handleInputChange}
                 placeholder="Description"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px", minHeight: "100px"}}
+                style={{display: "block", width: "100%", padding: "10px", marginBottom: "20px", minHeight: "100px"}}
             />
             
-            {/* EXISTING IMAGES */}
-            {bookImages.length > 0 && (
-                <div style={{marginBottom: "20px"}}>
-                    <h4>Current Images ({bookImages.length}):</h4>
-                    <div style={{display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px"}}>
-                        {bookImages.map((image, index) => (
-                            <div key={image.id} style={{position: "relative", border: "1px solid #ccc", borderRadius: "5px"}}>
+            <div style={{marginBottom: "20px", padding: "15px", border: "2px solid #007bff", borderRadius: "5px"}}>
+    <h3>Cover Image</h3>
+    
+    {coverImagePreview ? (
+        <>
+            <img
+                src={coverImagePreview}
+                alt="Cover"
+                style={{
+                    width: "150px",
+                    height: "200px",
+                    objectFit: "cover",
+                    marginBottom: "10px",
+                    borderRadius: "5px"
+                }}
+            />
+            
+            <div>
+                <button
+                    onClick={handleDeleteCoverImage}
+                    style={{
+                        background: "red",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 12px",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                        marginRight: "10px"
+                    }}
+                >
+                    Delete Cover
+                </button>
+            </div>
+        </>
+    ) : (
+        <p style={{color: "#666"}}>No cover image</p>
+    )}
+    
+    <label style={{display: "block", marginTop: "10px"}}>
+        <strong>Upload/Replace Cover:</strong>
+    </label>
+    <input
+        type="file"
+        accept="image/*"
+        onChange={handleCoverImageSelect}
+        style={{marginTop: "5px"}}
+    />
+</div>
+            {/* ========== 5 IMAGE SLOTS ========== */}
+            <h3>Book Images (5 Slots)</h3>
+            <div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "15px", marginBottom: "20px"}}>
+                {imageSlots.map((image, slotIndex) => (
+                    <div
+                        key={slotIndex}
+                        style={{
+                            border: "2px solid #ddd",
+                            borderRadius: "5px",
+                            aspectRatio: "3/4",
+                            position: "relative",
+                            overflow: "hidden"
+                        }}
+                    >
+                        {image ? (
+                            // EXISTING IMAGE
+                            <>
                                 <img
                                     src={image.image_url}
-                                    alt={`Book ${index + 1}`}
-                                    style={{width: "100%", height: "120px", objectFit: "cover"}}
+                                    alt={`Slot ${slotIndex + 1}`}
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover"
+                                    }}
                                 />
+                                
+                                {/* Delete button */}
                                 <button
-                                    onClick={() => handleDeleteExistingImage(image.id)}
+                                    onClick={() => handleDeleteExistingImage(slotIndex)}
                                     style={{
                                         position: "absolute",
                                         top: "5px",
@@ -216,69 +357,102 @@ function EditBook() {
                                         borderRadius: "50%",
                                         width: "30px",
                                         height: "30px",
-                                        cursor: "pointer"
+                                        cursor: "pointer",
+                                        fontSize: "16px"
                                     }}
                                 >
                                     ✕
                                 </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-            
-            {/* ADD NEW IMAGES */}
-            {bookImages.length < 5 && (
-                <div style={{marginBottom: "20px"}}>
-                    <label style={{display: "block", marginBottom: "10px"}}>
-                        <strong>Add More Images (max {5 - bookImages.length}):</strong>
-                    </label>
-                    <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageSelect}
-                        style={{marginBottom: "10px"}}
-                    />
-                </div>
-            )}
-            
-            {/* NEW IMAGE PREVIEWS */}
-            {imagePreviews.length > 0 && (
-                <div style={{marginBottom: "20px"}}>
-                    <h4>New Images ({imagePreviews.length}):</h4>
-                    <div style={{display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px"}}>
-                        {imagePreviews.map((preview, index) => (
-                            <div key={index} style={{position: "relative", border: "1px solid #ccc", borderRadius: "5px"}}>
+                                
+                                {/* Slot number */}
+                                <div style={{
+                                    position: "absolute",
+                                    bottom: "5px",
+                                    left: "5px",
+                                    background: "rgba(0,0,0,0.5)",
+                                    color: "white",
+                                    padding: "2px 8px",
+                                    borderRadius: "3px",
+                                    fontSize: "12px"
+                                }}>
+                                    Slot {slotIndex + 1}
+                                </div>
+                            </>
+                        ) : newImages[slotIndex] ? (
+                            // NEW IMAGE PREVIEW
+                            <>
                                 <img
-                                    src={preview}
-                                    alt={`New ${index + 1}`}
-                                    style={{width: "100%", height: "120px", objectFit: "cover"}}
+                                    src={URL.createObjectURL(newImages[slotIndex])}
+                                    alt={`New Slot ${slotIndex + 1}`}
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover"
+                                    }}
                                 />
+                                
+                                {/* Delete new image */}
                                 <button
-                                    onClick={() => handleDeleteNewImage(index)}
+                                    onClick={() => handleDeleteNewImage(slotIndex)}
                                     style={{
                                         position: "absolute",
                                         top: "5px",
                                         right: "5px",
-                                        background: "red",
+                                        background: "orange",
                                         color: "white",
                                         border: "none",
                                         borderRadius: "50%",
                                         width: "30px",
                                         height: "30px",
-                                        cursor: "pointer"
+                                        cursor: "pointer",
+                                        fontSize: "16px"
                                     }}
                                 >
                                     ✕
                                 </button>
-                            </div>
-                        ))}
+                                
+                                {/* New label */}
+                                <div style={{
+                                    position: "absolute",
+                                    bottom: "5px",
+                                    left: "5px",
+                                    background: "rgba(255,165,0,0.8)",
+                                    color: "white",
+                                    padding: "2px 8px",
+                                    borderRadius: "3px",
+                                    fontSize: "12px"
+                                }}>
+                                    NEW
+                                </div>
+                            </>
+                        ) : (
+                            // EMPTY SLOT - UPLOAD
+                            <label style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "100%",
+                                height: "100%",
+                                cursor: "pointer",
+                                background: "#f5f5f5",
+                                color: "#666"
+                            }}>
+                                <span style={{fontSize: "24px", marginBottom: "5px"}}>+</span>
+                                <span style={{fontSize: "12px", textAlign: "center"}}>Slot {slotIndex + 1}</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageSelectForSlot(slotIndex)}
+                                    style={{display: "none"}}
+                                />
+                            </label>
+                        )}
                     </div>
-                </div>
-            )}
+                ))}
+            </div>
             
-            {/* BUTTONS */}
+            {/* ========== BUTTONS ========== */}
             <button
                 onClick={handleUpdate}
                 disabled={loading}
