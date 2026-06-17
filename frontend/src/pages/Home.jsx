@@ -29,6 +29,22 @@ function Home() {
       book && book.filter(b => b.seller_id !== user?.id).map((book) => (
         <>
         <div key={book.id}>
+          <img
+  src={`https://ufxkxqgfvlvaufeqghuw.supabase.co/storage/v1/object/public/book-covers/${book.id}/cover.jpg`}
+  alt={book.title}
+  style={{
+  width: "150px",
+  height: "150px",
+  borderRadius: "50%",
+  background: "#e9ecef",
+  display: "flex",
+  alignItems: "start",
+  justifyContent: "start",
+  fontSize: "60px",
+  margin: "0 0 15px 0",
+  color: "#6c757d"
+}}
+/>
           <h3>{book.title}</h3>
           <p>{book.author}</p>
           <p>{book.price}</p>

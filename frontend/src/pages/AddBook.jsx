@@ -104,6 +104,11 @@ function AddBook() {
                 return;
             }
             
+            if (!coverImage) {
+  setError("Please select a cover image");
+  return;
+}
+
             // ========== STEP 1: CREATE BOOK ==========
             const bookRes = await axiosInstance.post("/api/books/add-book", bookFormData);
             const bookId = bookRes.data.book.id;
