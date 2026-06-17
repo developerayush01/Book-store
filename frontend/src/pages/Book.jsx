@@ -54,10 +54,56 @@ const handleCart=async()=>{
     }
 }
 
+
+const SUPABASE_URL =
+  "https://ufxkxqgfvlvaufeqghuw.supabase.co/storage/v1/object/public";
+
+const coverImageUrl =
+  `${SUPABASE_URL}/book-covers/${id}/cover.jpg`;
+
+const otherImages = Array.from({ length: 5 }, (_, i) => ({
+  id: i + 1,
+  url: `${SUPABASE_URL}/book-images/books/${id}/image-${i + 1}.jpg`,
+}));
+
+
 return (
      <div>
             {book ? (
                 <>
+                <img
+  src={coverImageUrl}
+  alt="Cover"
+  style={{
+  width: "150px",
+  height: "150px",
+  borderRadius: "15%",
+  background: "#e9ecef",
+  display: "flex",
+  alignItems: "start",
+  justifyContent: "start",
+  fontSize: "60px",
+  margin: "0 0 15px 0",
+  color: "#6c757d"
+}}
+  onError={(e) => {
+    e.target.style.display = "none";
+    
+  }}
+/>
+<div style={{ display: "flex", gap: "10px" }}>
+  {otherImages.map((img) => (
+    <img
+      key={img.id}
+      src={img.url}
+      alt={`Book ${img.id}`}
+      width={80}
+      onError={(e) => {
+        e.target.style.display = "none";
+      }}
+    />
+  ))}
+</div>
                     <h3>{book.title}</h3>
                     <p>{book.author}</p>
                     <p>{book.price}</p>

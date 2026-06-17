@@ -35,7 +35,7 @@ function Home() {
   style={{
   width: "150px",
   height: "150px",
-  borderRadius: "50%",
+  borderRadius: "15%",
   background: "#e9ecef",
   display: "flex",
   alignItems: "start",
