@@ -220,273 +220,203 @@ const handleDeleteCoverImage = async() => {
     };
 
     return (
-        <div style={{maxWidth: "600px", padding: "20px"}}
-        className="pb-20">
-            <h2>Edit Book</h2>
-            
-            {error && <div style={{color: "red", marginBottom: "10px"}}>{error}</div>}
-            
-            {/* ========== FORM INPUTS ========== */}
-            <input
-                type="text"
-                name="title"
-                value={editFormData.title}
-                onChange={handleInputChange}
-                placeholder="Book Title"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input
-                type="text"
-                name="author"
-                value={editFormData.author}
-                onChange={handleInputChange}
-                placeholder="Author"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input
-                type="number"
-                name="price"
-                value={editFormData.price}
-                onChange={handleInputChange}
-                placeholder="Price"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input
-                type="text"
-                name="condition"
-                value={editFormData.condition}
-                onChange={handleInputChange}
-                placeholder="Condition"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <textarea
-                name="description"
-                value={editFormData.description}
-                onChange={handleInputChange}
-                placeholder="Description"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "20px", minHeight: "100px"}}
-            />
-            
-            <div style={{marginBottom: "20px", padding: "15px", border: "2px solid #007bff", borderRadius: "5px"}}>
-    <h3>Cover Image</h3>
-    
-    {coverImagePreview ? (
-        <>
-            <img
-                src={coverImagePreview}
-                alt="Cover"
-                style={{
-                    width: "150px",
-                    height: "200px",
-                    objectFit: "cover",
-                    marginBottom: "10px",
-                    borderRadius: "5px"
-                }}
-            />
-            
-            <div>
-                <button
-                    onClick={handleDeleteCoverImage}
-                    style={{
-                        background: "red",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 12px",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                        marginRight: "10px"
-                    }}
-                >
-                    Delete Cover
-                </button>
-            </div>
-        </>
-    ) : (
-        <p style={{color: "#666"}}>No cover image</p>
+        <div className="min-h-screen bg-[#F7F3EC] py-10 px-4 pb-20">
+  <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm p-6">
+
+    {/* Title */}
+    <h2 className="text-2xl font-bold text-slate-800 mb-6">
+      Edit Book
+    </h2>
+
+    {/* Error */}
+    {error && (
+      <div className="mb-4 rounded-md bg-red-100 border border-red-300 px-3 py-2 text-red-700 text-sm">
+        {error}
+      </div>
     )}
-    
-    <label style={{display: "block", marginTop: "10px"}}>
-        <strong>Upload/Replace Cover:</strong>
-    </label>
-    <input
+
+    {/* Basic Details */}
+    <div className="space-y-3">
+      <input
+        type="text"
+        name="title"
+        value={editFormData.title}
+        onChange={handleInputChange}
+        placeholder="Book Title"
+        className="w-full border rounded-md px-3 py-2"
+      />
+
+      <input
+        type="text"
+        name="author"
+        value={editFormData.author}
+        onChange={handleInputChange}
+        placeholder="Author"
+        className="w-full border rounded-md px-3 py-2"
+      />
+
+      <input
+        type="number"
+        name="price"
+        value={editFormData.price}
+        onChange={handleInputChange}
+        placeholder="Price"
+        className="w-full border rounded-md px-3 py-2"
+      />
+
+      <input
+        type="text"
+        name="condition"
+        value={editFormData.condition}
+        onChange={handleInputChange}
+        placeholder="Condition"
+        className="w-full border rounded-md px-3 py-2"
+      />
+
+      <textarea
+        name="description"
+        value={editFormData.description}
+        onChange={handleInputChange}
+        placeholder="Description"
+        className="w-full border rounded-md px-3 py-2 min-h-30"
+      />
+    </div>
+
+    {/* Cover */}
+    <div className="mt-8 border rounded-lg p-4">
+      <h3 className="font-semibold text-lg mb-3">
+        Cover Image
+      </h3>
+
+      {coverImagePreview ? (
+        <div className="space-y-3">
+          <img
+            src={coverImagePreview}
+            alt="Cover"
+            className="w-36 h-48 object-cover rounded-md border"
+          />
+
+          <button
+            onClick={handleDeleteCoverImage}
+            className="px-3 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+          >
+            Remove Cover
+          </button>
+        </div>
+      ) : (
+        <p className="text-gray-500 text-sm mb-2">
+          No cover image uploaded.
+        </p>
+      )}
+
+      <input
         type="file"
         accept="image/*"
         onChange={handleCoverImageSelect}
-        style={{marginTop: "5px"}}
-    />
+        className="mt-3 text-sm"
+      />
+    </div>
+
+    {/* Gallery */}
+    <div className="mt-8">
+      <h3 className="font-semibold text-lg mb-4">
+        Book Images
+      </h3>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+
+        {imageSlots.map((image, slotIndex) => (
+          <div
+            key={slotIndex}
+            className="relative aspect-3/4 border rounded-lg overflow-hidden bg-gray-100"
+          >
+
+            {image ? (
+              <>
+                <img
+                  src={image.image_url}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+
+                <button
+                  onClick={() => handleDeleteExistingImage(slotIndex)}
+                  className="absolute top-1 right-1 w-7 h-7 rounded-full bg-red-600 text-white"
+                >
+                  ✕
+                </button>
+
+                <span className="absolute bottom-1 left-1 text-[10px] bg-black/70 text-white px-2 py-1 rounded">
+                  Slot {slotIndex + 1}
+                </span>
+              </>
+            ) : newImages[slotIndex] ? (
+              <>
+                <img
+                  src={URL.createObjectURL(newImages[slotIndex])}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+
+                <button
+                  onClick={() => handleDeleteNewImage(slotIndex)}
+                  className="absolute top-1 right-1 w-7 h-7 rounded-full bg-orange-500 text-white"
+                >
+                  ✕
+                </button>
+
+                <span className="absolute bottom-1 left-1 text-[10px] bg-orange-500 text-white px-2 py-1 rounded">
+                  NEW
+                </span>
+              </>
+            ) : (
+              <label className="flex flex-col items-center justify-center h-full cursor-pointer text-gray-500">
+                <span className="text-3xl">+</span>
+                <span className="text-xs">
+                  Slot {slotIndex + 1}
+                </span>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelectForSlot(slotIndex)}
+                  className="hidden"
+                />
+              </label>
+            )}
+
+          </div>
+        ))}
+
+      </div>
+    </div>
+
+    {/* Actions */}
+    <div className="mt-8 flex flex-col gap-3">
+
+      <button
+        onClick={handleUpdate}
+        disabled={loading}
+        className={`w-full py-3 rounded-md text-white font-medium ${
+          loading
+            ? "bg-gray-400"
+            : "bg-slate-800 hover:bg-slate-700"
+        }`}
+      >
+        {loading ? "Saving Changes..." : "Save Changes"}
+      </button>
+
+      <button
+        onClick={() => navigate("/my-books")}
+        className="w-full py-3 rounded-md border border-gray-300 hover:bg-gray-50"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
 </div>
-            {/* ========== 5 IMAGE SLOTS ========== */}
-            <h3>Book Images (5 Slots)</h3>
-            <div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "15px", marginBottom: "20px"}}>
-                {imageSlots.map((image, slotIndex) => (
-                    <div
-                        key={slotIndex}
-                        style={{
-                            border: "2px solid #ddd",
-                            borderRadius: "5px",
-                            aspectRatio: "3/4",
-                            position: "relative",
-                            overflow: "hidden"
-                        }}
-                    >
-                        {image ? (
-                            // EXISTING IMAGE
-                            <>
-                                <img
-                                    src={image.image_url}
-                                    alt={`Slot ${slotIndex + 1}`}
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover"
-                                    }}
-                                />
-                                
-                                {/* Delete button */}
-                                <button
-                                    onClick={() => handleDeleteExistingImage(slotIndex)}
-                                    style={{
-                                        position: "absolute",
-                                        top: "5px",
-                                        right: "5px",
-                                        background: "red",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        width: "30px",
-                                        height: "30px",
-                                        cursor: "pointer",
-                                        fontSize: "16px"
-                                    }}
-                                >
-                                    ✕
-                                </button>
-                                
-                                {/* Slot number */}
-                                <div style={{
-                                    position: "absolute",
-                                    bottom: "5px",
-                                    left: "5px",
-                                    background: "rgba(0,0,0,0.5)",
-                                    color: "white",
-                                    padding: "2px 8px",
-                                    borderRadius: "3px",
-                                    fontSize: "12px"
-                                }}>
-                                    Slot {slotIndex + 1}
-                                </div>
-                            </>
-                        ) : newImages[slotIndex] ? (
-                            // NEW IMAGE PREVIEW
-                            <>
-                                <img
-                                    src={URL.createObjectURL(newImages[slotIndex])}
-                                    alt={`New Slot ${slotIndex + 1}`}
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover"
-                                    }}
-                                />
-                                
-                                {/* Delete new image */}
-                                <button
-                                    onClick={() => handleDeleteNewImage(slotIndex)}
-                                    style={{
-                                        position: "absolute",
-                                        top: "5px",
-                                        right: "5px",
-                                        background: "orange",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        width: "30px",
-                                        height: "30px",
-                                        cursor: "pointer",
-                                        fontSize: "16px"
-                                    }}
-                                >
-                                    ✕
-                                </button>
-                                
-                                {/* New label */}
-                                <div style={{
-                                    position: "absolute",
-                                    bottom: "5px",
-                                    left: "5px",
-                                    background: "rgba(255,165,0,0.8)",
-                                    color: "white",
-                                    padding: "2px 8px",
-                                    borderRadius: "3px",
-                                    fontSize: "12px"
-                                }}>
-                                    NEW
-                                </div>
-                            </>
-                        ) : (
-                            // EMPTY SLOT - UPLOAD
-                            <label style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "100%",
-                                height: "100%",
-                                cursor: "pointer",
-                                background: "#f5f5f5",
-                                color: "#666"
-                            }}>
-                                <span style={{fontSize: "24px", marginBottom: "5px"}}>+</span>
-                                <span style={{fontSize: "12px", textAlign: "center"}}>Slot {slotIndex + 1}</span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageSelectForSlot(slotIndex)}
-                                    style={{display: "none"}}
-                                />
-                            </label>
-                        )}
-                    </div>
-                ))}
-            </div>
-            
-            {/* ========== BUTTONS ========== */}
-            <button
-                onClick={handleUpdate}
-                disabled={loading}
-                style={{
-                    width: "100%",
-                    padding: "10px",
-                    marginBottom: "10px",
-                    background: loading ? "#ccc" : "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: loading ? "not-allowed" : "pointer"
-                }}
-            >
-                {loading ? "Saving..." : "Save Changes"}
-            </button>
-            
-            <button
-                onClick={() => navigate("/my-books")}
-                style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: "#6c757d",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer"
-                }}
-            >
-                Cancel
-            </button>
-        </div>
     );
 }
 

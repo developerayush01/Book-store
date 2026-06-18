@@ -90,114 +90,106 @@ const handleUpdateProfile=async()=>{
 };
 
 return (
-        <div style={{maxWidth: "500px", margin: "0 auto", padding: "20px"}}>
-            <h2>Edit Profile</h2>
-            
-            
-            {error && (
-                <div style={{color: "red", marginBottom: "10px"}}>
-                    {error}
-                </div>
-            )}
-            
-            
-            <div style={{marginBottom: "20px", textAlign: "center"}}>
-                <h4>Profile Picture</h4>
-                
-                
-                {imagePreview ? (
-                    <img
-                        src={imagePreview}
-                        alt="Profile"
-                        style={{
-                            width: "150px",
-                            height: "150px",
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                            marginBottom: "15px"
-                        }}
-                    />
-                ) : (
-                    <div style={{
-                        width: "150px",
-                        height: "150px",
-                        borderRadius: "50%",
-                        background: "#e9ecef",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "60px",
-                        margin: "0 auto 15px",
-                        color: "#6c757d"
-                    }}>
-                        {user?.name?.charAt(0).toUpperCase()}
-                    </div>
-                )}
-                
-                {/* File input */}
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageSelect}
-                    style={{marginBottom: "10px"}}
-                />
-            </div>
-            
-            {/* ========== FORM INPUTS ========== */}
-            <input 
-                value={editFormData.name}
-                onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
-                placeholder="Name"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input 
-                value={editFormData.email}
-                onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
-                placeholder="Email"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input 
-                value={editFormData.phone}
-                onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
-                placeholder="Phone"
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            {/* ========== BUTTONS ========== */}
-            <button 
-                onClick={handleUpdateProfile}
-                disabled={loading}
-                style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: loading ? "#ccc" : "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    marginBottom: "10px",
-                    cursor: loading ? "not-allowed" : "pointer"
-                }}
-            >
-                {loading ? "Saving..." : "Save"}
-            </button>
-            
-            <button 
-                onClick={() => navigate(-1)}
-                style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: "#6c757d",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer"
-                }}
-            >
-                Cancel
-            </button>
+        <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">
+
+  <div className="bg-white w-full max-w-md rounded-lg shadow-sm p-6">
+
+    {/* TITLE */}
+    <h2 className="text-2xl font-bold mb-6 text-slate-800 text-center">
+      Edit Profile
+    </h2>
+
+    {/* ERROR */}
+    {error && (
+      <div className="text-red-500 text-sm mb-3 text-center">
+        {error}
+      </div>
+    )}
+
+    {/* ========== PROFILE IMAGE ========== */}
+    <div className="text-center mb-6">
+
+      <h4 className="text-sm font-semibold mb-3 text-gray-600">
+        Profile Picture
+      </h4>
+
+      {imagePreview ? (
+        <img
+          src={imagePreview}
+          alt="Profile"
+          className="w-28 h-28 rounded-full object-cover mx-auto mb-3"
+        />
+      ) : (
+        <div className="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-600 mx-auto mb-3">
+          {user?.name?.charAt(0).toUpperCase()}
         </div>
+      )}
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageSelect}
+        className="text-sm"
+      />
+
+    </div>
+
+    {/* ========== INPUTS ========== */}
+    <div className="flex flex-col gap-3">
+
+      <input
+        value={editFormData.name}
+        onChange={(e) =>
+          setEditFormData({ ...editFormData, name: e.target.value })
+        }
+        placeholder="Name"
+        className="border p-2 rounded text-sm"
+      />
+
+      <input
+        value={editFormData.email}
+        onChange={(e) =>
+          setEditFormData({ ...editFormData, email: e.target.value })
+        }
+        placeholder="Email"
+        className="border p-2 rounded text-sm"
+      />
+
+      <input
+        value={editFormData.phone}
+        onChange={(e) =>
+          setEditFormData({ ...editFormData, phone: e.target.value })
+        }
+        placeholder="Phone"
+        className="border p-2 rounded text-sm"
+      />
+
+    </div>
+
+    {/* ========== BUTTONS ========== */}
+    <div className="mt-6 flex flex-col gap-3">
+
+      <button
+        onClick={handleUpdateProfile}
+        disabled={loading}
+        className={`w-full py-2 rounded text-white text-sm ${
+          loading ? "bg-gray-400" : "bg-slate-800 hover:bg-slate-700"
+        }`}
+      >
+        {loading ? "Saving..." : "Save Changes"}
+      </button>
+
+      <button
+        onClick={() => navigate(-1)}
+        className="w-full py-2 rounded border text-sm"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+</div>
     );
 }
 

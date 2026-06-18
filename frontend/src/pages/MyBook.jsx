@@ -101,29 +101,106 @@ useEffect(() => {
       }
     }
 return (
-    <div>
-            {!book || book.length===0 ? (
-              <>
-              <p>No books listed yet</p>
-              <button onClick={()=>{setshowBookForm(true)}}>Add Book</button>
-              </>
-            ) : (
-              <>
-                {book.map((book)=>(
-                <div key={book.id}>
-                        <h3>{book.title}</h3>
-          <p>{book.author}</p>
-          <p>{book.price}</p>
-          <button onClick={() => navigate(`/edit-book//${book.id}`)}>Edit</button>
-    <button onClick={()=>handleDeleteBook(book.id)}>Delete</button>
-    <br />
-    </div>
-  ))}
-            <button onClick={()=>navigate("/add-book")}>Add Book</button>
-  </>
+    <div className="min-h-screen bg-[#F7F3EC] py-10 px-4">
 
-)}
+  <div className="max-w-5xl mx-auto">
+
+    {/* HEADER */}
+    <div className="flex justify-between items-center mb-6">
+
+      <h2 className="text-2xl font-bold text-slate-800">
+        My Books
+      </h2>
+
+      <button
+        onClick={() => navigate("/add-book")}
+        className="bg-slate-800 text-white px-4 py-2 rounded text-sm hover:bg-slate-700"
+      >
+        + Add Book
+      </button>
+
+    </div>
+
+    {/* EMPTY STATE */}
+    {!book || book.length === 0 ? (
+      <div className="text-center mt-20">
+
+        <p className="text-gray-500 mb-4">
+          No books listed yet
+        </p>
+
+        <button
+          onClick={() => setshowBookForm(true)}
+          className="bg-slate-800 text-white px-4 py-2 rounded text-sm"
+        >
+          Add Your First Book
+        </button>
+
+      </div>
+
+    ) : (
+      <div className="flex flex-col gap-4">
+
+        {book.map((book) => (
+          <div
+            key={book.id}
+            className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between"
+          >
+
+            {/* LEFT SIDE */}
+            <div className="flex items-center gap-4">
+
+              {/* Cover */}
+              <img
+                src={`https://ufxkxqgfvlvaufeqghuw.supabase.co/storage/v1/object/public/book-covers/${book.id}/cover.jpg`}
+                alt={book.title}
+                className="w-14 h-16 object-cover rounded bg-gray-200"
+              />
+
+              {/* INFO */}
+              <div>
+                <h3 className="font-semibold text-gray-800">
+                  {book.title}
+                </h3>
+
+                <p className="text-sm text-gray-500">
+                  {book.author}
+                </p>
+
+                <p className="text-blue-600 font-bold text-sm">
+                  Rs {book.price}
+                </p>
+              </div>
+
             </div>
+
+            {/* RIGHT SIDE ACTIONS */}
+            <div className="flex gap-2">
+
+              <button
+                onClick={() => navigate(`/edit-book/${book.id}`)}
+                className="px-3 py-1 text-xs border border-blue-500 text-blue-600 rounded hover:bg-blue-50"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => handleDeleteBook(book.id)}
+                className="px-3 py-1 text-xs border border-red-500 text-red-600 rounded hover:bg-red-50"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+        ))}
+
+      </div>
+    )}
+
+  </div>
+</div>
 );
 }
 export default MyBook;

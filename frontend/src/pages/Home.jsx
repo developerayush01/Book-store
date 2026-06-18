@@ -20,6 +20,25 @@ function Home() {
     fetchBooks();
   }, []);
 
+  const handleCart = async (book_id) => {
+  try {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    await axiosInstance.post("/api/cart/add-cart", {
+      book_id: book_id
+    });
+
+    alert("Added to Cart Successfully");
+    setBook;
+
+  } catch (error) {
+    alert("Cannot add to cart");
+  }
+};
+
   return (
     
     <div className="pb-20">
@@ -98,6 +117,12 @@ function Home() {
               >
                 View Details
               </Link>
+              <button
+  onClick={() => handleCart(book.id)}
+  className="block mt-2 w-full text-sm py-1.5 rounded border border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white transition"
+>
+  Add to Cart
+</button>
 
             </div>
           ))}

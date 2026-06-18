@@ -22,14 +22,65 @@ function Login() {
         }
     }
     return (
-        <div>
-            <h2>Login</h2>
-            <input type="text" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder='Enter Phone'/>
-            <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder='Enter password'/>
-            <button onClick={handleLogin}>Login</button>
-            <p>Do not have account ?</p><span><Link to='/register'>Sign Up</Link>  </span>
-            {error && <p>{error}</p>}
-        </div>
+        <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">
+
+  <div className="bg-white w-full max-w-sm rounded-lg shadow-sm p-6">
+
+    {/* TITLE */}
+    <h2 className="text-2xl font-bold text-slate-800 text-center mb-6">
+      Login
+    </h2>
+
+    {/* ERROR */}
+    {error && (
+      <p className="text-red-500 text-sm text-center mb-3">
+        {error}
+      </p>
+    )}
+
+    {/* INPUTS */}
+    <div className="flex flex-col gap-3">
+
+      <input
+        type="text"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder="Enter Phone"
+        className="border p-2 rounded text-sm"
+      />
+
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter Password"
+        className="border p-2 rounded text-sm"
+      />
+
+    </div>
+
+    {/* BUTTON */}
+    <button
+      onClick={handleLogin}
+      className="w-full mt-5 bg-slate-800 text-white py-2 rounded text-sm hover:bg-slate-700 transition"
+    >
+      Login
+    </button>
+
+    {/* SIGNUP */}
+    <p className="text-xs text-center mt-4 text-gray-600">
+      Don’t have an account?
+      <Link
+        to="/register"
+        className="text-blue-600 ml-1 hover:underline"
+      >
+        Sign Up
+      </Link>
+    </p>
+
+  </div>
+
+</div>
 
     )
 }

@@ -168,229 +168,189 @@ function AddBook() {
     };
 
     return (
-        <div style={{maxWidth: "600px", margin: "0 auto", padding: "20px"}}>
-            <h2>Add New Book</h2>
-            
-            {error && <div style={{color: "red", marginBottom: "10px"}}>{error}</div>}
-            
-            {/* FORM INPUTS */}
-            <input
-                type="text"
-                name="title"
-                placeholder="Book Title"
-                value={bookFormData.title}
-                onChange={handleInputChange}
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input
-                type="text"
-                name="author"
-                placeholder="Author"
-                value={bookFormData.author}
-                onChange={handleInputChange}
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input
-                type="number"
-                name="price"
-                placeholder="Price (Rs)"
-                value={bookFormData.price}
-                onChange={handleInputChange}
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <input
-                type="text"
-                name="condition"
-                placeholder="Condition (e.g., New, Like New, Good)"
-                value={bookFormData.condition}
-                onChange={handleInputChange}
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "10px"}}
-            />
-            
-            <textarea
-                name="description"
-                placeholder="Description"
-                value={bookFormData.description}
-                onChange={handleInputChange}
-                style={{display: "block", width: "100%", padding: "10px", marginBottom: "20px", minHeight: "100px"}}
-            />
-            
-            {/* ========== COVER IMAGE SECTION ========== */}
-            <div style={{marginBottom: "20px", padding: "15px", border: "2px solid #007bff", borderRadius: "5px"}}>
-                <h3>Cover Image (Optional)</h3>
-                
-                {coverImagePreview ? (
-                    <>
-                        <img
-                            src={coverImagePreview}
-                            alt="Cover"
-                            style={{
-                                width: "150px",
-                                height: "200px",
-                                objectFit: "cover",
-                                marginBottom: "10px",
-                                borderRadius: "5px"
-                            }}
-                        />
-                        
-                        <div>
-                            <button
-                                onClick={handleDeleteCoverImage}
-                                style={{
-                                    background: "red",
-                                    color: "white",
-                                    border: "none",
-                                    padding: "8px 12px",
-                                    borderRadius: "5px",
-                                    cursor: "pointer",
-                                    marginRight: "10px"
-                                }}
-                            >
-                                Delete Cover
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <p style={{color: "#666"}}>No cover image selected</p>
-                )}
-                
-                <label style={{display: "block", marginTop: "10px"}}>
-                    <strong>Upload Cover:</strong>
-                </label>
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverImageSelect}
-                    style={{marginTop: "5px"}}
-                />
-            </div>
-            
-            {/* ========== 5 IMAGE SLOTS ========== */}
-            <h3>Book Images (5 Slots - Select at least 1)</h3>
-            <div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "15px", marginBottom: "20px"}}>
-                {imageSlots.map((image, slotIndex) => (
-                    <div
-                        key={slotIndex}
-                        style={{
-                            border: "2px solid #ddd",
-                            borderRadius: "5px",
-                            aspectRatio: "3/4",
-                            position: "relative",
-                            overflow: "hidden"
-                        }}
-                    >
-                        {image ? (
-                            // IMAGE SELECTED
-                            <>
-                                <img
-                                    src={URL.createObjectURL(image)}
-                                    alt={`Slot ${slotIndex + 1}`}
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover"
-                                    }}
-                                />
-                                
-                                {/* Delete button */}
-                                <button
-                                    onClick={() => handleDeleteImage(slotIndex)}
-                                    style={{
-                                        position: "absolute",
-                                        top: "5px",
-                                        right: "5px",
-                                        background: "red",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        width: "30px",
-                                        height: "30px",
-                                        cursor: "pointer",
-                                        fontSize: "16px"
-                                    }}
-                                >
-                                    ✕
-                                </button>
-                                
-                                {/* Slot number */}
-                                <div style={{
-                                    position: "absolute",
-                                    bottom: "5px",
-                                    left: "5px",
-                                    background: "rgba(0,0,0,0.5)",
-                                    color: "white",
-                                    padding: "2px 8px",
-                                    borderRadius: "3px",
-                                    fontSize: "12px"
-                                }}>
-                                    Slot {slotIndex + 1}
-                                </div>
-                            </>
-                        ) : (
-                            // EMPTY SLOT - UPLOAD
-                            <label style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "100%",
-                                height: "100%",
-                                cursor: "pointer",
-                                background: "#f5f5f5",
-                                color: "#666"
-                            }}>
-                                <span style={{fontSize: "24px", marginBottom: "5px"}}>+</span>
-                                <span style={{fontSize: "12px", textAlign: "center"}}>Slot {slotIndex + 1}</span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageSelectForSlot(slotIndex)}
-                                    style={{display: "none"}}
-                                />
-                            </label>
-                        )}
-                    </div>
-                ))}
-            </div>
-            
-            {/* BUTTONS */}
-            <button
-                onClick={handleAddBook}
-                disabled={loading}
-                style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: loading ? "#ccc" : "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    fontSize: "16px",
-                    marginBottom: "10px",
-                    cursor: loading ? "not-allowed" : "pointer"
-                }}
-            >
-                {loading ? "Adding Book..." : "Add Book"}
-            </button>
-            
-            <button
-                onClick={() => navigate("/")}
-                style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "#6c757d",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    fontSize: "16px",
-                    cursor: "pointer"
-                }}
-            >
-                Cancel
-            </button>
+        <div className="min-h-screen bg-[#F7F3EC] py-10 px-4">
+
+  <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-sm p-6">
+
+    {/* TITLE */}
+    <h2 className="text-2xl font-bold mb-6 text-slate-800">
+      Add New Book
+    </h2>
+
+    {/* ERROR */}
+    {error && (
+      <div className="text-red-500 text-sm mb-3">
+        {error}
+      </div>
+    )}
+
+    {/* ========== BASIC INFO ========== */}
+    <div className="grid gap-3">
+
+      <input
+        type="text"
+        name="title"
+        placeholder="Book Title"
+        value={bookFormData.title}
+        onChange={handleInputChange}
+        className="border p-2 rounded text-sm"
+      />
+
+      <input
+        type="text"
+        name="author"
+        placeholder="Author"
+        value={bookFormData.author}
+        onChange={handleInputChange}
+        className="border p-2 rounded text-sm"
+      />
+
+      <input
+        type="number"
+        name="price"
+        placeholder="Price (Rs)"
+        value={bookFormData.price}
+        onChange={handleInputChange}
+        className="border p-2 rounded text-sm"
+      />
+
+      <input
+        type="text"
+        name="condition"
+        placeholder="Condition (New / Good / Like New)"
+        value={bookFormData.condition}
+        onChange={handleInputChange}
+        className="border p-2 rounded text-sm"
+      />
+
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={bookFormData.description}
+        onChange={handleInputChange}
+        className="border p-2 rounded text-sm min-h-25"
+      />
+
+    </div>
+
+    {/* ========== COVER IMAGE ========== */}
+    <div className="mt-6 border rounded p-4">
+
+      <h3 className="font-semibold mb-3">
+        Cover Image
+      </h3>
+
+      {coverImagePreview ? (
+        <div className="mb-3">
+          <img
+            src={coverImagePreview}
+            alt="Cover"
+            className="w-32 h-44 object-cover rounded"
+          />
+
+          <button
+            onClick={handleDeleteCoverImage}
+            className="mt-2 text-xs text-red-500"
+          >
+            Remove Cover
+          </button>
         </div>
+      ) : (
+        <p className="text-sm text-gray-500 mb-2">
+          No cover selected
+        </p>
+      )}
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleCoverImageSelect}
+        className="text-sm"
+      />
+
+    </div>
+
+    {/* ========== IMAGE GRID ========== */}
+    <div className="mt-6">
+
+      <h3 className="font-semibold mb-3">
+        Book Images (5 slots)
+      </h3>
+
+      <div className="grid grid-cols-5 gap-3">
+
+        {imageSlots.map((image, index) => (
+          <div
+            key={index}
+            className="border rounded aspect-3/4 relative overflow-hidden bg-gray-100"
+          >
+
+            {image ? (
+              <>
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt={`slot-${index}`}
+                  className="w-full h-full object-cover"
+                />
+
+                <button
+                  onClick={() => handleDeleteImage(index)}
+                  className="absolute top-1 right-1 bg-red-500 text-white text-xs w-6 h-6 rounded-full"
+                >
+                  ✕
+                </button>
+
+                <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 rounded">
+                  {index + 1}
+                </span>
+              </>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-gray-500 text-xs">
+
+                <span className="text-lg">+</span>
+                <span>Slot {index + 1}</span>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelectForSlot(index)}
+                  className="hidden"
+                />
+
+              </label>
+            )}
+
+          </div>
+        ))}
+
+      </div>
+
+    </div>
+
+    {/* ========== ACTIONS ========== */}
+    <div className="mt-6 flex flex-col gap-3">
+
+      <button
+        onClick={handleAddBook}
+        disabled={loading}
+        className={`w-full py-2 rounded text-white text-sm ${
+          loading ? "bg-gray-400" : "bg-slate-800 hover:bg-slate-700"
+        }`}
+      >
+        {loading ? "Adding Book..." : "Add Book"}
+      </button>
+
+      <button
+        onClick={() => navigate("/")}
+        className="w-full py-2 rounded border text-sm"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+</div>
     );
 }
 
