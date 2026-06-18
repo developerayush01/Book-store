@@ -95,38 +95,113 @@ const handleSelect = (id) => {
     }
 };
 
+const SUPABASE_URL = "https://ufxkxqgfvlvaufeqghuw.supabase.co/storage/v1/object/public/book-covers";
 
   return (
-    <div>
-            {cart.length===0 ? (
-              <p>No items in cart yet</p>
-            ) : (
-                <>
-                <input 
-            type="checkbox" 
-            checked={selectAll} 
-            onChange={handleSelectAll} 
-        />
-        <label>Select All</label>
-                {cart.map((cart)=>(
-                    <div key={cart.id}>
-                    <li>
-                        <h3><input 
-    type="checkbox" 
-    checked={selectedItems.includes(cart.id)}
-    onChange={() => handleSelect(cart.id)}
-/>{cart.Book.title}</h3>
-                        <h3>{cart.Book.author}</h3>
-                        <h3>{cart.Book.price}</h3>
-                    </li>
-    </div>
-            ))}
-            <h3>Total:{totalPrice}</h3>
-            <button onClick={deleteItems}>Delete</button>
-            <button onClick={handleCheckout}>Checkout</button>
-            </>
-        )}
+    <div className="min-h-screen bg-[#F7F3EC] px-4 py-8">
+
+  <div className="max-w-4xl mx-auto">
+
+    {/* HEADER CONTROLS */}
+    {cart.length !== 0 && (
+      <div className="flex items-center justify-between mb-4">
+
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={selectAll}
+            onChange={handleSelectAll}
+          />
+          <span className="text-sm">Select All</span>
+        </label>
+
+      </div>
+    )}
+
+    {/* EMPTY STATE */}
+    {cart.length === 0 ? (
+      <p className="text-center text-gray-500 mt-10">
+        No items in cart yet
+      </p>
+    ) : (
+      <>
+        {/* CART ITEMS */}
+        <div className="flex flex-col gap-3">
+
+          {cart.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between"
+            >
+
+              {/* LEFT: INFO */}
+              <div className="flex items-center gap-3">
+
+                <input
+                  type="checkbox"
+                  checked={selectedItems.includes(item.id)}
+                  onChange={() => handleSelect(item.id)}
+                />
+                <img
+  src={`${SUPABASE_URL}/${item.book_id}/cover.jpg`}
+  className="w-12 h-12 object-cover rounded"
+/>
+                <div>
+                  <h3 className="font-semibold text-gray-800">
+                    {item.Book.title}
+                  </h3>
+
+                  <p className="text-sm text-gray-500">
+                    {item.Book.author}
+                  </p>
+                </div>
+
+              </div>
+
+              {/* RIGHT: PRICE */}
+              <div className="text-right">
+                <p className="font-bold text-blue-600">
+                  Rs {item.Book.price}
+                </p>
+              </div>
+
             </div>
+          ))}
+
+        </div>
+
+        {/* SUMMARY SECTION */}
+        <div className="mt-6 bg-white p-4 rounded-lg shadow-sm">
+
+          <h3 className="text-lg font-bold mb-2">
+            Total: Rs {totalPrice}
+          </h3>
+
+          <div className="flex gap-3">
+
+            <button
+              onClick={deleteItems}
+              className="flex-1 border border-red-500 text-red-500 py-2 rounded hover:bg-red-50"
+            >
+              Delete
+            </button>
+
+            <button
+              onClick={handleCheckout}
+              className="flex-1 bg-slate-800 text-white py-2 rounded hover:bg-slate-700"
+            >
+              Checkout
+            </button>
+
+          </div>
+
+        </div>
+
+      </>
+    )}
+
+  </div>
+</div>
 );
 }
 

@@ -203,7 +203,7 @@ const deleteBookImage = async(req, res) => {
 
 const getAllBooks=async(req,res)=>{
     try {
-        const book = await Book.findAll();
+        const book = await Book.findAll({where:{status:"Available"}});
         if(book.length===0)
         {
             return res.status(200).json({message:"No books available"});

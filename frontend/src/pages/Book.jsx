@@ -68,53 +68,96 @@ const otherImages = Array.from({ length: 5 }, (_, i) => ({
 
 
 return (
-     <div>
-            {book ? (
-                <>
-                <img
-  src={coverImageUrl}
-  alt="Cover"
-  style={{
-  width: "150px",
-  height: "150px",
-  borderRadius: "15%",
-  background: "#e9ecef",
-  display: "flex",
-  alignItems: "start",
-  justifyContent: "start",
-  fontSize: "60px",
-  margin: "0 0 15px 0",
-  color: "#6c757d"
-}}
-  onError={(e) => {
-    e.target.style.display = "none";
-    
-  }}
-/>
-<div style={{ display: "flex", gap: "10px" }}>
-  {otherImages.map((img) => (
-    <img
-      key={img.id}
-      src={img.url}
-      alt={`Book ${img.id}`}
-      width={80}
-      onError={(e) => {
-        e.target.style.display = "none";
-      }}
-    />
-  ))}
-</div>
-                    <h3>{book.title}</h3>
-                    <p>{book.author}</p>
-                    <p>{book.price}</p>
-                    <p>{book.condition}</p>
-                    <button onClick={handleBuy}>Buy Now</button>
-                    <button onClick={handleCart}>Add to Cart</button>
-                </>
-            ) : (
-                <p></p>
-            )}
+     <div className="min-h-screen bg-[#F7F3EC] py-10 px-4">
+
+  {book ? (
+    <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-sm p-6 md:p-10">
+
+      {/* TOP SECTION */}
+      <div className="grid md:grid-cols-2 gap-8">
+
+        {/* LEFT: IMAGES */}
+        <div>
+
+          {/* Main Cover */}
+          <img
+            src={coverImageUrl}
+            alt="Cover"
+            className="w-full h-80 object-cover rounded-lg bg-gray-200"
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
+
+          {/* Thumbnails */}
+          <div className="flex gap-2 mt-3 flex-wrap">
+            {otherImages.map((img) => (
+              <img
+                key={img.id}
+                src={img.url}
+                alt={`Book ${img.id}`}
+                className="w-20 h-20 object-cover rounded-md border hover:scale-105 transition"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
+              />
+            ))}
+          </div>
+
         </div>
+
+        {/* RIGHT: DETAILS */}
+        <div className="flex flex-col">
+
+          {/* Title */}
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+            {book.title}
+          </h1>
+
+          {/* Author */}
+          <p className="text-gray-500 mt-1">
+            by {book.author}
+          </p>
+
+          {/* Price */}
+          <p className="text-blue-600 text-xl font-bold mt-4">
+            Rs {book.price}
+          </p>
+
+          {/* Condition */}
+          <p className="mt-2 text-sm text-gray-600">
+            Condition: <span className="font-semibold">{book.condition}</span>
+          </p>
+
+          {/* Buttons */}
+          <div className="mt-6 flex flex-col gap-3">
+
+            <button
+              onClick={handleBuy}
+              className="bg-slate-800 text-white py-2 rounded-lg hover:bg-slate-700 transition"
+            >
+              Buy Now
+            </button>
+
+            <button
+              onClick={handleCart}
+              className="border border-slate-800 text-slate-800 py-2 rounded-lg hover:bg-slate-100 transition"
+            >
+              Add to Cart
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  ) : (
+    <p className="text-center text-gray-500">Loading...</p>
+  )}
+
+</div>
 );
 }
 

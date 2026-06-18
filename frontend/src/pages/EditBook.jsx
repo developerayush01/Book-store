@@ -220,7 +220,8 @@ const handleDeleteCoverImage = async() => {
     };
 
     return (
-        <div style={{maxWidth: "600px", margin: "0 auto", padding: "20px"}}>
+        <div style={{maxWidth: "600px", padding: "20px"}}
+        className="pb-20">
             <h2>Edit Book</h2>
             
             {error && <div style={{color: "red", marginBottom: "10px"}}>{error}</div>}
