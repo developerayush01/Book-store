@@ -1,7 +1,7 @@
 const supabase = require("../config/supabase");
 const BookImage = require("../models/bookImageModel");
 const Book=require("../models/bookModel");
-const User=require("../models/userModel");
+const {User}=require("../models");
 const {Op}=require("sequelize");
 
 const addBook=async(req,res)=>{
@@ -203,7 +203,14 @@ const deleteBookImage = async(req, res) => {
 
 const getAllBooks=async(req,res)=>{
     try {
-        const book = await Book.findAll({where:{status:"Available"}});
+        const book = await Book.findAll({where:{status:"Available"},
+        include:[
+                {
+                    model: User,
+                    attributes: ['name']
+                }
+            ]
+        });
         if(book.length===0)
         {
             return res.status(200).json({message:"No books available"});
@@ -222,6 +229,10 @@ const getAllBooks=async(req,res)=>{
                 {
                     model: BookImage,
                     attributes: ['id', 'image_url', 'order']
+                },
+                {
+                    model: User,
+                    attributes: ['name']
                 }
             ]
         });

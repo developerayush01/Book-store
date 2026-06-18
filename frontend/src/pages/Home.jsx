@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate,useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import { useAuth } from "../context/AuthContext";
@@ -7,6 +7,8 @@ function Home() {
   const [book, setBook] = useState([]);
   const [error,setError] = useState("");
   const {user}=useAuth();
+  const navigate = useNavigate();
+  const location=useLocation();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -21,20 +23,19 @@ function Home() {
   }, []);
 
   const handleCart = async (book_id) => {
-  try {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    await axiosInstance.post("/api/cart/add-cart", {
-      book_id: book_id
+  if (!user) {
+    navigate("/login", {
+      state: { from: "/", action: "addToCart", book_id }
     });
+    return;
+  }
 
+  try {
+    await axiosInstance.post("/api/cart/add-cart", { book_id });
+    setBook((prevBooks) => prevBooks.filter((b) => b.id !== book_id));
     alert("Added to Cart Successfully");
-    setBook;
-
   } catch (error) {
+    console.log(error);
     alert("Cannot add to cart");
   }
 };
@@ -107,6 +108,9 @@ function Home() {
 
               <p className="text-xs text-gray-500">{book.author}</p>
 
+              <h3 className="mt-2 font-semibold text-sm text-gray-800">
+                {book.User.name}
+              </h3>
               <p className="text-blue-600 font-bold mt-1">
                 Rs {book.price}
               </p>

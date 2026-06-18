@@ -1,58 +1,67 @@
-import { useParams,useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axios'
-import {useAuth} from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext'
 
 function Book() {
     const { id } = useParams();
-    const [book,setBook]=useState(null);
+    const [book, setBook] = useState(null);
     const navigate = useNavigate();
-const { user } = useAuth();
+    const location = useLocation();
+    const { user } = useAuth();
 
-    useEffect(()=>{
-        const fetchBook=async()=>{
-                try {
-                const response=await axiosInstance.get(`/api/books/${id}`);
+    useEffect(() => {
+        const fetchBook = async () => {
+            try {
+                const response = await axiosInstance.get(`/api/books/${id}`);
                 setBook(response.data);
-
             } catch (error) {
                 alert("Something went wrong");
             }
-            
         }
         fetchBook();
-    },[id]);
+    }, [id]);
 
-    const handleBuy=async()=>{
-        try {
-            if (!user){
-            navigate("/login", { state: { from: `/books/${id}` } });
-            return;
+    useEffect(() => {
+        if (location.state?.triggerBuyNow && book && user) {
+            navigate("/checkout", {
+                state: { selectedCartItems: [{ Book: book, book_id: id }] },
+                replace: true
+            });
         }
-       
-        navigate("/checkout", { 
-    state: { 
-        selectedCartItems: [{ Book: book, book_id: id }]
-    } 
-});
-    }            
-         catch (error) {
+    }, [location.state, book, user]);
+
+    const handleBuy = async () => {
+        try {
+            if (!user) {
+                navigate("/login", {
+                    state: { from: `/books/${id}`, action: "buyNow", book_id: id }
+                });
+                return;
+            }
+
+            navigate("/checkout", {
+                state: { selectedCartItems: [{ Book: book, book_id: id }] }
+            });
+        } catch (error) {
             alert("Server error");
         }
-};
+    };
 
-const handleCart=async()=>{
-    try {
-        if (!user){
-            navigate("/login");
-            return;
+    const handleCart = async () => {
+        try {
+            if (!user) {
+                navigate("/login", {
+                    state: { from: `/books/${id}`, action: "addToCart", book_id: id }
+                });
+                return;
+            }
+            await axiosInstance.post("/api/cart/add-cart", { book_id: id });
+            alert("Added to Cart Succesfully");
+        } catch (error) {
+            alert("Cannot add to cart");
         }
-        await axiosInstance.post("/api/cart/add-cart",{book_id:id});
-        alert("Added to Cart Succesfully");
- } catch (error) {
-        alert("Cannot add to cart");
-    }
-}
+    };
 
 
 const SUPABASE_URL =
@@ -117,6 +126,10 @@ return (
           {/* Author */}
           <p className="text-gray-500 mt-1">
             by {book.author}
+          </p>
+
+          <p className="text-gray-500 mt-1">
+            by {book.User.name}
           </p>
 
           {/* Price */}

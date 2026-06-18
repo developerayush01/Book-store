@@ -1,4 +1,4 @@
-import {useNavigate,Link} from 'react-router-dom'
+import {useNavigate,useLocation,Link} from 'react-router-dom'
 import {useState} from 'react'
 import {useAuth} from '../context/AuthContext'
 import axiosInstance from '../api/axios'
@@ -7,20 +7,44 @@ function Login() {
     const [phone,setPhone]=useState("");
     const [password,setPassword]=useState("");
     const navigate=useNavigate();
+    const location=useLocation();
     const {setUser}=useAuth();
     const [error, setError] = useState("");
 
-    const handleLogin=async()=>{
+
+    const redirectState = location.state;
+    
+     const handleLogin=async()=>{
         try {
             await axiosInstance.post("/api/users/login",{phone,password});
 
             const profile=await axiosInstance.get("/api/users/profile");
             setUser(profile.data.user);
-            navigate("/");
+
+            if (redirectState?.action === "addToCart") {
+    try {
+        await axiosInstance.post("/api/cart/add-cart", {
+            book_id: redirectState.book_id
+        });
+        alert("Added to Cart Successfully");
+    } catch (error) {
+        alert("Cannot add to cart");
+    }
+    navigate(redirectState.from || "/");
+} else if (redirectState?.action === "buyNow") {
+    navigate(redirectState.from || "/", {
+        state: { triggerBuyNow: true }
+    });
+} else {
+    navigate(redirectState?.from || "/");
+}
+
         } catch (error) {
             setError(error.response.data.message);
         }
     }
+
+
     return (
         <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">
 

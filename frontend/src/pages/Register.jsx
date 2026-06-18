@@ -1,4 +1,4 @@
-import {useNavigate,Link} from 'react-router-dom'
+import {useNavigate,useLocation,Link} from 'react-router-dom'
 import {useState} from 'react'
 import axiosInstance from '../api/axios'
 
@@ -8,12 +8,16 @@ function Register() {
     const [phone,setPhone]=useState("");
     const [password,setPassword]=useState("");
     const navigate=useNavigate();
+    const location=useLocation();
     const [error, setError] = useState("");
+
+
+     const redirectState = location.state;
 
     const handleRegister=async()=>{
     try {
         await axiosInstance.post("/api/users/register",{name,email,phone,password});
-        navigate("/login");
+        navigate("/login", { state: redirectState });
     } catch (error) {
         setError(error.response.data.message);
     }
