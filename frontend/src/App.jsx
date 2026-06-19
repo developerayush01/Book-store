@@ -13,6 +13,8 @@ import MyOrder from "./pages/MyOrder";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailed from "./pages/PaymentFailed";
 
 function App() {
 
@@ -33,6 +35,8 @@ function App() {
 <Route path="/my-orders" element={<MyOrder/>}/>
 <Route path="/my-cart" element={<Cart/>}/>
 <Route path="/checkout" element={<Checkout/>}/>
+<Route path="/payment/success" element={<PaymentSuccess />} />
+<Route path="/payment/failed" element={<PaymentFailed />} />
     </Routes>
     </BrowserRouter>
   )

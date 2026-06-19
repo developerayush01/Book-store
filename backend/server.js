@@ -8,6 +8,7 @@ const bookRoutes=require("./routes/bookRoutes");
 const orderRoutes=require("./routes/orderRoutes");
 const cartRoutes=require("./routes/cartRoutes");
 const addressRoutes=require("./routes/addressRoutes");
+const paymentRoutes = require("./routes/paymentRoute");
 
 require("./utils/cronJobs");
 
@@ -38,6 +39,7 @@ app.use("/api/books",bookRoutes);
 app.use("/api/orders",orderRoutes);
 app.use("/api/cart",cartRoutes);
 app.use("/api/address",addressRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

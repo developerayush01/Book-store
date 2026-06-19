@@ -5,6 +5,7 @@ const Order = require("./orderModel");
 const Address = require("./addressModel");
 const OrderItem = require("./orderItemModel");
 const BookImage = require("./bookImageModel");
+const Transaction = require("./paymentModel");
 
 /* Relationships */
 
@@ -35,11 +36,15 @@ Book.hasMany(Cart, { foreignKey: "book_id" });
 
 Address.belongsTo(User,{foreignKey:"user_id"});
 
+User.hasMany(Transaction, { foreignKey: "user_id" });
+Transaction.belongsTo(User, { foreignKey: "user_id" });
+
 module.exports = {
   User,
   Book,
   Cart,
   Order,
   OrderItem,
-  Address
+  Address,
+  Transaction
 };

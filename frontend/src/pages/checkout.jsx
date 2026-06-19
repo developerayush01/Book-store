@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import {useAuth} from '../context/AuthContext'
 import { useNavigate,useLocation} from "react-router-dom";
+import { initializeEsewaPayment } from "../api/payment";
 
 function Checkout() {
     const [order, setOrder] = useState([]);
@@ -315,6 +316,11 @@ if (!loading && !user)
 
     {/* ================= PAYMENT ================= */}
     <div className="mt-6 bg-white p-5 rounded-lg shadow-sm">
+
+      <button onClick={() => initializeEsewaPayment(bookIds, totalPrice, selectedAddressId)}
+        className="w-full bg-slate-800 text-white py-3 rounded hover:bg-slate-700 transition font-semibold">
+  Pay with eSewa
+</button>
 
       <button
         onClick={handlePayment}
