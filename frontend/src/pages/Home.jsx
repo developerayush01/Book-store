@@ -13,7 +13,7 @@ function Home() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axiosInstance.get("api/books/get-all");
+        const response = await axiosInstance.get("/api/books/get-all");
         setBook(response.data.book);
       } catch (error) {
         setError(error.response.data.message || "Something went wrong");
