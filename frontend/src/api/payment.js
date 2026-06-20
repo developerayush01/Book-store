@@ -1,10 +1,14 @@
 import axiosInstance from "./axios";
 
-export const initializeEsewaPayment = async (bookIds, totalPrice, addressId) => {
+export const initializeEsewaPayment = async (
+  bookIds,
+  totalPrice,
+  addressId,
+) => {
   const { data } = await axiosInstance.post(
     "/api/payment/initialize-esewa",
     { book_ids: bookIds, amount: totalPrice, address_id: addressId },
-    { withCredentials: true }
+    { withCredentials: true },
   );
 
   const { payment, transaction, esewaUrl, productCode } = data;
@@ -21,8 +25,8 @@ export const initializeEsewaPayment = async (bookIds, totalPrice, addressId) => 
     product_code: productCode,
     product_service_charge: 0,
     product_delivery_charge: 0,
-    success_url: `${import.meta.env.VITE_BACKEND_URL}/api/payment/esewa/success`,
-    failure_url: `${import.meta.env.VITE_BACKEND_URL}/api/payment/esewa/failure`,
+    success_url: `https://clean-coins-film.loca.lt/api/payment/esewa/success`,
+    failure_url: `https://clean-coins-film.loca.lt/api/payment/esewa/failure`,
     signed_field_names: payment.signed_field_names,
     signature: payment.signature,
   };
@@ -35,6 +39,8 @@ export const initializeEsewaPayment = async (bookIds, totalPrice, addressId) => 
     form.appendChild(input);
   });
 
+  console.log("success_url:", fields.success_url);
+  console.log("failure_url:", fields.failure_url);
   document.body.appendChild(form);
   form.submit();
 };

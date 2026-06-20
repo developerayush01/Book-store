@@ -16,7 +16,9 @@ const initializeEsewa = async (req, res) => {
     });
 
     if (books.length !== book_ids.length) {
-      return res.status(400).json({ message: "One or more books are not available" });
+      return res
+        .status(400)
+        .json({ message: "One or more books are not available" });
     }
 
     // Delete any old PENDING transaction from this user
@@ -49,38 +51,48 @@ const initializeEsewa = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 const esewaSuccess = async (req, res) => {
+  console.log("esewaSuccess hit", req.query);
   try {
     const { data } = req.query;
+    const { decodedData } = await verifyEsewaPayment(data);
 
-    const { response, decodedData } = await verifyEsewaPayment(data);
+    console.log("decoded transaction_uuid:", decodedData.transaction_uuid);
 
     const transaction = await Transaction.findOne({
       where: { transaction_uuid: decodedData.transaction_uuid },
     });
 
+    console.log("found transaction:", transaction);
+
     if (!transaction) {
       return res.redirect(`${process.env.FRONTEND_URL}/payment/failed`);
     }
 
-    const book = await Book.findByPk(transaction.book_id);
-
-    const order = await Order.create({
-      book_id: transaction.book_id,
-      buyer_id: transaction.user_id,
-      seller_id: book.user_id,
-      status: "Completed",
+    const books = await Book.findAll({
+      where: { id: { [Op.in]: transaction.book_ids } },
     });
 
-    await book.update({ status: "Sold" });
+    for (const book of books) {
+      await Order.create({
+        book_id: book.id,
+        buyer_id: transaction.user_id,
+        seller_id: book.user_id,
+        address_id: transaction.address_id,
+        total_price: book.price,
+        status: "Completed",
+      });
 
+      await book.update({ status: "Sold" });
+    }
     await transaction.update({
       status: "COMPLETED",
       esewa_transaction_code: decodedData.transaction_code,
     });
 
     res.redirect(
-      `${process.env.FRONTEND_URL}/payment/success?orderId=${order.id}`
+      `${process.env.FRONTEND_URL}/payment/success?transactionId=${transaction.id}`,
     );
   } catch (err) {
     console.error("eSewa verification failed:", err.message);
@@ -95,7 +107,7 @@ const esewaFailure = async (req, res) => {
       const decodedData = JSON.parse(Buffer.from(data, "base64").toString());
       await Transaction.update(
         { status: "FAILED" },
-        { where: { transaction_uuid: decodedData.transaction_uuid } }
+        { where: { transaction_uuid: decodedData.transaction_uuid } },
       );
     }
   } catch (err) {
