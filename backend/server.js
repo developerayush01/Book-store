@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://book-store-five-xi-70.vercel.app/"
+    "https://book-store-2p7j95cbr-book-exchange.vercel.app/"
   ],
   credentials: true
 }));
