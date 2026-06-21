@@ -53,7 +53,11 @@ const initializeEsewa = async (req, res) => {
 };
 
 const esewaSuccess = async (req, res) => {
+  const esewaSuccess = async (req, res) => {
   console.log("esewaSuccess hit", req.query);
+  console.log("full url:", req.url);
+  console.log("all params:", req.params);
+  console.log("body:", req.body);
   try {
     const { data } = req.query;
     const { decodedData } = await verifyEsewaPayment(data);
