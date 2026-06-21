@@ -25,8 +25,8 @@ export const initializeEsewaPayment = async (
     product_code: productCode,
     product_service_charge: 0,
     product_delivery_charge: 0,
-    success_url: `https://clean-coins-film.loca.lt/api/payment/esewa/success`,
-    failure_url: `https://clean-coins-film.loca.lt/api/payment/esewa/failure`,
+    success_url: `https://book-store-1-zx4o.onrender.com/api/payment/success`,
+failure_url: `https://book-store-1-zx4o.onrender.com/api/payment/failure`,
     signed_field_names: payment.signed_field_names,
     signature: payment.signature,
   };
@@ -41,6 +41,7 @@ export const initializeEsewaPayment = async (
 
   console.log("success_url:", fields.success_url);
   console.log("failure_url:", fields.failure_url);
-  document.body.appendChild(form);
-  form.submit();
+  console.log("All fields being submitted:", JSON.stringify(fields, null, 2));
+document.body.appendChild(form);
+form.submit();
 };

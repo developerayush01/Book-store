@@ -9,7 +9,7 @@ const {
 } = require("../controllers/paymentController");
 
 router.post("/initialize-esewa", auth, initializeEsewa);
-router.get("/esewa/success", esewaSuccess);
-router.get("/esewa/failure", esewaFailure);
+router.get("/success", esewaSuccess);
+router.get("/failure", esewaFailure);
 
 module.exports = router;
