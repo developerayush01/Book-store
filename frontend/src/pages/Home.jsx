@@ -22,6 +22,13 @@ function Home() {
     fetchBooks();
   }, []);
 
+  useEffect(() => {
+  if (location.state?.cartSuccess) {
+    alert("Added to Cart Successfully");
+    window.history.replaceState({}, document.title);
+  }
+}, [location.state]);
+
   const handleCart = async (book_id) => {
   if (!user) {
     navigate("/login", {

@@ -31,6 +31,13 @@ function Book() {
         }
     }, [location.state, book, user]);
 
+    useEffect(() => {
+  if (location.state?.cartSuccess) {
+    alert("Added to Cart Successfully");
+    window.history.replaceState({}, document.title);
+  }
+}, [location.state]);
+
     const handleBuy = async () => {
         try {
             if (!user) {

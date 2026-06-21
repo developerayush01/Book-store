@@ -17,7 +17,7 @@ function Register() {
     const handleRegister=async()=>{
     try {
         await axiosInstance.post("/api/users/register",{name,email,phone,password});
-        navigate("/login", { state: redirectState });
+        navigate("/login", { state: location.state });
     } catch (error) {
         setError(error.response.data.message);
     }

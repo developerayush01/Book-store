@@ -26,11 +26,11 @@ function Login() {
         await axiosInstance.post("/api/cart/add-cart", {
             book_id: redirectState.book_id
         });
-        alert("Added to Cart Successfully");
     } catch (error) {
         alert("Cannot add to cart");
     }
-    navigate(redirectState.from || "/");
+    navigate(redirectState.from || "/", { state: { cartSuccess: true } });
+
 } else if (redirectState?.action === "buyNow") {
     navigate(redirectState.from || "/", {
         state: { triggerBuyNow: true }
@@ -96,6 +96,7 @@ function Login() {
       Don’t have an account?
       <Link
         to="/register"
+        state={redirectState}
         className="text-blue-600 ml-1 hover:underline"
       >
         Sign Up
