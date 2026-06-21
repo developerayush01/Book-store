@@ -9,6 +9,7 @@ function Home() {
   const {user}=useAuth();
   const navigate = useNavigate();
   const location=useLocation();
+  const [cartMessage, setCartMessage] = useState("");
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -24,8 +25,9 @@ function Home() {
 
   useEffect(() => {
   if (location.state?.cartSuccess) {
-    alert("Added to Cart Successfully");
+    setCartMessage("Added to Cart Successfully");
     window.history.replaceState({}, document.title);
+    setTimeout(() => setCartMessage(""), 3000);
   }
 }, [location.state]);
 
@@ -40,7 +42,8 @@ function Home() {
   try {
     await axiosInstance.post("/api/cart/add-cart", { book_id });
     setBook((prevBooks) => prevBooks.filter((b) => b.id !== book_id));
-    alert("Added to Cart Successfully");
+    setCartMessage("Added to Cart Successfully");
+    setTimeout(() => setCartMessage(""), 3000);
   } catch (error) {
     console.log(error);
     alert("Cannot add to cart");
@@ -50,7 +53,11 @@ function Home() {
   return (
     
     <div className="pb-20">
-      
+      {cartMessage && (
+  <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
+    {cartMessage}
+  </div>
+)}
       <div>
         <div>
         <input type="text" />

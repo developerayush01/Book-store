@@ -9,6 +9,7 @@ function Book() {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
+const [cartMessage, setCartMessage] = useState("");
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -31,10 +32,11 @@ function Book() {
         }
     }, [location.state, book, user]);
 
-    useEffect(() => {
+useEffect(() => {
   if (location.state?.cartSuccess) {
-    alert("Added to Cart Successfully");
+    setCartMessage("Added to Cart Successfully");
     window.history.replaceState({}, document.title);
+    setTimeout(() => setCartMessage(""), 3000);
   }
 }, [location.state]);
 
@@ -64,7 +66,8 @@ function Book() {
                 return;
             }
             await axiosInstance.post("/api/cart/add-cart", { book_id: id });
-            alert("Added to Cart Succesfully");
+            setCartMessage("Added to Cart Successfully");
+    setTimeout(() => setCartMessage(""), 3000);
         } catch (error) {
             alert("Cannot add to cart");
         }
@@ -85,6 +88,12 @@ const otherImages = Array.from({ length: 5 }, (_, i) => ({
 
 return (
      <div className="min-h-screen bg-[#F7F3EC] py-10 px-4">
+
+{cartMessage && (
+      <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
+        {cartMessage}
+      </div>
+    )}
 
   {book ? (
     <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-sm p-6 md:p-10">
