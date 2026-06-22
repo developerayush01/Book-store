@@ -4,7 +4,7 @@ import {useAuth} from '../context/AuthContext'
 import axiosInstance from '../api/axios'
 
 function Login() {
-    const [phone,setPhone]=useState("");
+    const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
     const navigate=useNavigate();
     const location=useLocation();
@@ -16,7 +16,7 @@ function Login() {
     
      const handleLogin=async()=>{
         try {
-            await axiosInstance.post("/api/users/login",{phone,password});
+            await axiosInstance.post("/api/users/login",{email,password});
 
             const profile=await axiosInstance.get("/api/users/profile");
             setUser(profile.data.user);
@@ -67,8 +67,8 @@ function Login() {
 
       <input
         type="text"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         placeholder="Enter Phone"
         className="border p-2 rounded text-sm"
       />

@@ -64,13 +64,7 @@ const { data: urlData } = supabase
 const registerUser = async(req,res)=>{
 
     try {
-        const{name,email,phone,password}=req.body;
-
-        const existingUser= await User.findOne({where:{phone}});
-        if(existingUser)
-        {
-            return res.status(400).json({message:"Phone number  already registered"});
-        }
+        const{name,email,password}=req.body;
 
         const existingEmail= await User.findOne({where:{email}});
         if(existingEmail)
@@ -83,7 +77,6 @@ const registerUser = async(req,res)=>{
         const user=await User.create({
             name,
             email,
-            phone,
             password:hashPassword,
         })
 
@@ -98,9 +91,9 @@ const loginUser=async(req,res)=>{
 
     try {
         
-        const {phone,password}=req.body;
+        const {email,password}=req.body;
     
-        const existingUser=await User.findOne({where:{phone}});
+        const existingUser=await User.findOne({where:{email}});
         
         if(!existingUser)
             {

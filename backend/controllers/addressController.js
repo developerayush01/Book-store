@@ -4,7 +4,7 @@ const addAddress=async(req,res)=>{
 
     try {
         const user=req.user.userId;
-    const {delivery_phone,street,city,district,province}=req.body;
+    const {street,city,district,province}=req.body;
 
     if(!user)
     {
@@ -113,6 +113,7 @@ const deleteAddress=async(req,res)=>{
 
         return res.status(200).json("Address delete succesful");
     } catch (error) {
+        console.log(error);
         return res.status(500).json({message:"Server Error"});
     }
 }

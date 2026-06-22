@@ -5,7 +5,6 @@ import axiosInstance from '../api/axios'
 function Register() {
     const [name,setName]=useState("");
     const [email,setEmail]=useState("");
-    const [phone,setPhone]=useState("");
     const [password,setPassword]=useState("");
     const navigate=useNavigate();
     const location=useLocation();
@@ -16,7 +15,7 @@ function Register() {
 
     const handleRegister=async()=>{
     try {
-        await axiosInstance.post("/api/users/register",{name,email,phone,password});
+        await axiosInstance.post("/api/users/register",{name,email,password});
         navigate("/login", { state: location.state });
     } catch (error) {
         setError(error.response.data.message);
@@ -60,14 +59,6 @@ return (
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email Address"
-        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
-      />
-
-      <input
-        type="text"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        placeholder="Phone Number"
         className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
       />
 
