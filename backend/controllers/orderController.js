@@ -10,6 +10,8 @@ const createOrder = async (req, res) => {
     }
     const { bookIds,address_id } = req.body;
 
+    const address = await Address.findByPk(address_id);
+
     let totalPrice = 0;
     const books = [];
     for (const bookId of bookIds) {
@@ -32,7 +34,10 @@ const createOrder = async (req, res) => {
       buyer_id: loggedId,
       total_price: totalPrice,
       status: "Pending",
-       address_id: address_id
+      delivery_street: address?.street,
+      delivery_city: address?.city,
+      delivery_district: address?.district,
+      delivery_province: address?.province,
     });
 
     for (const book of books) {

@@ -15,10 +15,25 @@ const Order = sequelize.define("Order", {
     allowNull: false
   },
 
-  address_id: {
-    type: DataTypes.UUID,
+  delivery_street: {
+    type: DataTypes.STRING,
     allowNull: true
-},
+  },
+
+  delivery_city: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+
+  delivery_district: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+
+  delivery_province: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 
   total_price: {
     type: DataTypes.FLOAT,

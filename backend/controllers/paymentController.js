@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { Op } = require("sequelize");
 const { getEsewaPaymentHash, verifyEsewaPayment } = require("../utils/esewa");
-const { Transaction, Order, Book } = require("../models");
+const { Transaction, Order, Book, Address } = require("../models");
 
 const initializeEsewa = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ const initializeEsewa = async (req, res) => {
     const books = await Book.findAll({
       where: {
         id: { [Op.in]: book_ids },
-        status: "Available",
+        status: ["Available","Reserved"]
       },
     });
 
@@ -53,6 +53,7 @@ const initializeEsewa = async (req, res) => {
 };
 
 const esewaSuccess = async (req, res) => {
+
   console.log("esewaSuccess hit", req.query);
   console.log("full url:", req.url);
   console.log("all params:", req.params);
@@ -77,14 +78,19 @@ const esewaSuccess = async (req, res) => {
       where: { id: { [Op.in]: transaction.book_ids } },
     });
 
+    const address = await Address.findByPk(transaction.address_id);
+
     for (const book of books) {
       await Order.create({
         book_id: book.id,
-        buyer_id: transaction.user_id,
-        seller_id: book.user_id,
-        address_id: transaction.address_id,
-        total_price: book.price,
-        status: "Completed",
+    buyer_id: transaction.user_id,
+    seller_id: book.user_id,
+    delivery_street: address?.street,
+    delivery_city: address?.city,
+    delivery_district: address?.district,
+    delivery_province: address?.province,
+    total_price: book.price,
+    status: "Completed",
       });
 
       await book.update({ status: "Sold" });

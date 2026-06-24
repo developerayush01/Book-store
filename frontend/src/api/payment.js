@@ -5,7 +5,8 @@ export const initializeEsewaPayment = async (
   totalPrice,
   addressId,
 ) => {
-  const { data } = await axiosInstance.post(
+  try {
+    const { data } = await axiosInstance.post(
     "/api/payment/initialize-esewa",
     { book_ids: bookIds, amount: totalPrice, address_id: addressId },
     { withCredentials: true },
@@ -44,4 +45,7 @@ failure_url: `https://book-store-1-zx4o.onrender.com/api/payment/failure`,
   console.log("All fields being submitted:", JSON.stringify(fields, null, 2));
 document.body.appendChild(form);
 form.submit();
-};
+  } catch (error) {
+    console.log("Error:", error.response?.data);
+  }
+}

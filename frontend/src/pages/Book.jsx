@@ -68,6 +68,7 @@ useEffect(() => {
             await axiosInstance.post("/api/cart/add-cart", { book_id: id });
             setCartMessage("Added to Cart Successfully");
     setTimeout(() => setCartMessage(""), 3000);
+    setTimeout(() => navigate("/"), 2000);
         } catch (error) {
             alert("Cannot add to cart");
         }
@@ -96,6 +97,29 @@ return (
     )}
 
   {book ? (
+      <>
+        {/* Reserved/Sold check */}
+        {(book.status === "Reserved" || book.status === "Sold") ? (
+          <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg shadow-md text-center">
+              <div className="text-4xl mb-4">📚</div>
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                {book.status === "Reserved" ? "Book is Reserved" : "Book is Sold"}
+              </h1>
+              <p className="text-gray-500 mb-6">
+                {book.status === "Reserved"
+                  ? "This book is currently reserved by another user."
+                  : "This book has already been sold."}
+              </p>
+              <button
+                onClick={() => navigate("/")}
+                className="bg-slate-800 text-white px-6 py-2 rounded-lg hover:bg-slate-700"
+              >
+                Browse Other Books
+              </button>
+            </div>
+          </div>
+        ) : (
     <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-sm p-6 md:p-10">
 
       {/* TOP SECTION */}
@@ -182,10 +206,11 @@ return (
       </div>
 
     </div>
+        )}
+        </>
   ) : (
     <p className="text-center text-gray-500">Loading...</p>
   )}
-
 </div>
 );
 }

@@ -21,6 +21,7 @@ const Transaction = sequelize.define("Transaction", {
     type: DataTypes.UUID,
     allowNull: true,
     references: { model: "address", key: "id" },
+  onDelete: "SET NULL",
   },
   transaction_uuid: {
     type: DataTypes.STRING,
