@@ -315,18 +315,17 @@ if (!loading && !user)
     </div>
 
     {/* ================= PAYMENT ================= */}
-    <div className="mt-6 bg-white p-5 rounded-lg shadow-sm">
+    <div className="mt-6 bg-white p-5 rounded-lg shadow-sm flex flex-col gap-3">
 
       <button onClick={() => initializeEsewaPayment(bookIds, totalPrice, selectedAddressId)}
         className="w-full bg-slate-800 text-white py-3 rounded hover:bg-slate-700 transition font-semibold">
   Pay with eSewa
 </button>
-
       <button
         onClick={handlePayment}
         className="w-full bg-slate-800 text-white py-3 rounded hover:bg-slate-700 transition font-semibold"
       >
-        Place Order
+        Cash On Delivery
       </button>
 
     </div>

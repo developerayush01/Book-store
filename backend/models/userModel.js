@@ -33,8 +33,16 @@ const User = sequelize.define("User", {
   is_admin: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-  }
-
+  },
+  
+is_verified: {
+  type: DataTypes.BOOLEAN,
+  defaultValue: false,
+},
+verification_token: {
+  type: DataTypes.STRING,
+  allowNull: true,
+},
 }, {
   tableName: "users",
   timestamps: true

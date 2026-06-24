@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
+import Verification from "./pages/Verification";
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home/>}/>
       <Route path="/login" element={<Login/>}/>
+      <Route path="/verify" element={<Verification />} />
       <Route path="/register" element={<Register/>}/>
       <Route path="/profile" element={<Profile/>}/>
 <Route path="/profile/edit" element={<EditProfile/>}/>

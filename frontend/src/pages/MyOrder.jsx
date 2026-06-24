@@ -55,9 +55,14 @@ if (!loading && !user)
             {/* HEADER */}
             <div className="flex justify-between items-center mb-3">
 
-              <span className="text-sm font-semibold text-gray-700">
-                Order ID: {order.id}
-              </span>
+               <div>
+    <span className="text-sm font-semibold text-gray-700">
+      Order ID: {order.id}
+    </span>
+    jsx<p className="text-xs text-gray-400 mt-1">
+  {new Date(order.createdAt).toLocaleString()}
+</p>
+  </div>
 
               <span className={`text-xs px-2 py-1 rounded-full ${
                 order.status === "pending"

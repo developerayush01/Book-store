@@ -204,6 +204,7 @@ const deleteBookImage = async(req, res) => {
 const getAllBooks=async(req,res)=>{
     try {
         const book = await Book.findAll({where:{status:"Available"},
+            order: [["createdAt", "DESC"]],
         include:[
                 {
                     model: User,
@@ -298,6 +299,7 @@ const getMyBooks=async(req,res)=>{
             }
             const books=await Book.findAll({
                 where:{seller_id:loggedId},
+                order: [["createdAt", "DESC"]],
             attributes: { exclude: ["createdAt", "updatedAt"] }
 });
 

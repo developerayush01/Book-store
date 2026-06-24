@@ -40,7 +40,11 @@ function Login() {
 }
 
         } catch (error) {
-            setError(error.response.data.message);
+          if (error.response?.status === 403) {
+    navigate("/verify", { state: { ...redirectState, email } });
+    return;
+  }
+            setError(error.response.data.message || "Login failed");
         }
     }
 

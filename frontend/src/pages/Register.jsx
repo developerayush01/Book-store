@@ -13,14 +13,14 @@ function Register() {
 
      const redirectState = location.state;
 
-    const handleRegister=async()=>{
-    try {
-        await axiosInstance.post("/api/users/register",{name,email,password});
-        navigate("/login", { state: location.state });
-    } catch (error) {
-        setError(error.response.data.message);
-    }
-}
+    const handleRegister = async () => {
+  try {
+    await axiosInstance.post("/api/users/register", { name, email, password });
+    navigate("/verify", { state: { ...location.state, email } });
+  } catch (error) {
+    setError(error.response?.data?.message || "Registration failed");
+  }
+};
 
 return (
         <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">

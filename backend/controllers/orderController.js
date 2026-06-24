@@ -1,6 +1,7 @@
 const Order = require("../models/orderModel");
 const OrderItem = require("../models/orderItemModel");
 const Book = require("../models/bookModel");
+const Address = require("../models/addressModel");
 
 const createOrder = async (req, res) => {
   try {
@@ -50,6 +51,7 @@ const createOrder = async (req, res) => {
     }
     return res.status(201).json({ message: "Order created succesfully" });
   } catch (error) {
+    console.log("Order error:", error);
     return res.status(500).json({ message: "Server error on order" });
   }
 };
@@ -63,6 +65,7 @@ const getMyOrder = async (req, res) => {
 
     const orders = await Order.findAll({ 
     where: { buyer_id: loggedId },
+    order: [["createdAt", "DESC"]],
     include: [{
         model: OrderItem,
         include: [{

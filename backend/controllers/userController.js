@@ -3,6 +3,7 @@ const {User}=require("../models");
 const multer=require('multer');
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
+const { sendVerificationEmail } = require("../utils/sendEmail");
 
 
 const uploadProfilePicture=async(req,res)=>{
@@ -73,14 +74,20 @@ const registerUser = async(req,res)=>{
         }
 
         const hashPassword=await bcrypt.hash(password,10);
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         const user=await User.create({
             name,
             email,
             password:hashPassword,
+            is_verified: false,
+      verification_token: otp,
         })
 
-      return res.status(201).json({message:"User registered succesfully"});
+        console.log("User created, sending email to:", email);
+await sendVerificationEmail(email, otp);
+console.log("Email sent successfully");
+      return res.status(201).json({ message: "Registered successfully. Check your email for OTP." });
 
     } catch (error) {
         res.status(500).json({message:"Server error",error:error.message})
@@ -107,6 +114,11 @@ const loginUser=async(req,res)=>{
             {
             return res.status(401).json({message:"Invalid password"});
             }
+
+            if (!existingUser.is_verified) {
+      return res.status(403).json({ message: "Email not verified", email: existingUser.email });
+    }
+
             if(isMatch)
             {
                 const token=jwt.sign(
@@ -129,12 +141,63 @@ const loginUser=async(req,res)=>{
 
 }
 
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.is_verified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    if (user.verification_token !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    await user.update({
+      is_verified: true,
+      verification_token: null,
+    });
+
+    return res.status(200).json({ message: "Email verified successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.is_verified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await user.update({ verification_token: otp });
+    await sendVerificationEmail(email, otp);
+
+    return res.status(200).json({ message: "OTP resent successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getProfile=async(req,res)=>{
     try {
         const userId=req.user.userId;
         const user=await User.findOne({
             where:{id:userId},
-            attributes:{exclude:["password","createdAt","updatedAt"]}
+            attributes:{exclude:["password","createdAt","updatedAt","verification_token"]}
         });
 
         if(!user)
@@ -211,4 +274,4 @@ const logOut=async(req,res)=>{
     return res.status(500).json({message:"Server error on logout"});
 }
 }
-module.exports= {registerUser,loginUser,uploadProfilePicture,editProfile,changePassword,getProfile,logOut};
+module.exports= {registerUser,loginUser,verifyOtp,resendOtp,uploadProfilePicture,editProfile,changePassword,getProfile,logOut};

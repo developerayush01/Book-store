@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { Op } = require("sequelize");
 const { getEsewaPaymentHash, verifyEsewaPayment } = require("../utils/esewa");
-const { Transaction, Order, Book, Address } = require("../models");
+const { Transaction, Order, Book, Address,Cart } = require("../models");
 
 const initializeEsewa = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ const initializeEsewa = async (req, res) => {
     const books = await Book.findAll({
       where: {
         id: { [Op.in]: book_ids },
-        status: ["Available","Reserved"]
+        status:{[Op.in]: ["Available","Reserved"]}
       },
     });
 
@@ -47,6 +47,8 @@ const initializeEsewa = async (req, res) => {
       esewaUrl: `${process.env.ESEWA_GATEWAY_URL}/api/epay/main/v2/form`,
       productCode: process.env.ESEWA_PRODUCT_CODE,
     });
+
+    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -95,6 +97,14 @@ const esewaSuccess = async (req, res) => {
 
       await book.update({ status: "Sold" });
     }
+
+    await Cart.destroy({
+  where: {
+    user_id: transaction.user_id,
+    book_id: { [Op.in]: transaction.book_ids },
+  },
+});
+    
     await transaction.update({
       status: "COMPLETED",
       esewa_transaction_code: decodedData.transaction_code,
