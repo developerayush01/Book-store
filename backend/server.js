@@ -17,6 +17,7 @@ const { connectDB } = require("./config/db"); // import your DB connection
 const app = express();
 
 app.use(express.json());
+
 app.use(
   cors({
     origin: [
@@ -26,6 +27,14 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://book-store-five-xi-70.vercel.app"
+  ],
+  credentials: true
+}));
 app.use(cookieParser());
 connectDB();
 
