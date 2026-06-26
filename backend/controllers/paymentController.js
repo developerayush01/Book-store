@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { Op } = require("sequelize");
 const { getEsewaPaymentHash, verifyEsewaPayment } = require("../utils/esewa");
-const { Transaction, Order, Book, Address,Cart } = require("../models");
+const { Transaction, Order, Book, Address, Cart } = require("../models");
 
 const initializeEsewa = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ const initializeEsewa = async (req, res) => {
     const books = await Book.findAll({
       where: {
         id: { [Op.in]: book_ids },
-        status:{[Op.in]: ["Available","Reserved"]}
+        status: { [Op.in]: ["Available", "Reserved"] },
       },
     });
 
@@ -47,30 +47,27 @@ const initializeEsewa = async (req, res) => {
       esewaUrl: `${process.env.ESEWA_GATEWAY_URL}/api/epay/main/v2/form`,
       productCode: process.env.ESEWA_PRODUCT_CODE,
     });
-
-    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
 const esewaSuccess = async (req, res) => {
-
-  console.log("esewaSuccess hit", req.query);
-  console.log("full url:", req.url);
-  console.log("all params:", req.params);
-  console.log("body:", req.body);
+  ("esewaSuccess hit", req.query);
+  ("full url:", req.url);
+  ("all params:", req.params);
+  ("body:", req.body);
   try {
     const { data } = req.query;
     const { decodedData } = await verifyEsewaPayment(data);
 
-    console.log("decoded transaction_uuid:", decodedData.transaction_uuid);
+    ("decoded transaction_uuid:", decodedData.transaction_uuid);
 
     const transaction = await Transaction.findOne({
       where: { transaction_uuid: decodedData.transaction_uuid },
     });
 
-    console.log("found transaction:", transaction);
+    ("found transaction:", transaction);
 
     if (!transaction) {
       return res.redirect(`${process.env.FRONTEND_URL}/payment/failed`);
@@ -85,26 +82,26 @@ const esewaSuccess = async (req, res) => {
     for (const book of books) {
       await Order.create({
         book_id: book.id,
-    buyer_id: transaction.user_id,
-    seller_id: book.user_id,
-    delivery_street: address?.street,
-    delivery_city: address?.city,
-    delivery_district: address?.district,
-    delivery_province: address?.province,
-    total_price: book.price,
-    status: "Completed",
+        buyer_id: transaction.user_id,
+        seller_id: book.user_id,
+        delivery_street: address?.street,
+        delivery_city: address?.city,
+        delivery_district: address?.district,
+        delivery_province: address?.province,
+        total_price: book.price,
+        status: "Completed",
       });
 
       await book.update({ status: "Sold" });
     }
 
     await Cart.destroy({
-  where: {
-    user_id: transaction.user_id,
-    book_id: { [Op.in]: transaction.book_ids },
-  },
-});
-    
+      where: {
+        user_id: transaction.user_id,
+        book_id: { [Op.in]: transaction.book_ids },
+      },
+    });
+
     await transaction.update({
       status: "COMPLETED",
       esewa_transaction_code: decodedData.transaction_code,

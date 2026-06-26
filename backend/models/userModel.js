@@ -43,6 +43,10 @@ verification_token: {
   type: DataTypes.STRING,
   allowNull: true,
 },
+verification_token_expiry: {
+  type: DataTypes.DATE,
+  allowNull: true,
+},
 }, {
   tableName: "users",
   timestamps: true

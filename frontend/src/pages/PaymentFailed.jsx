@@ -1,31 +1,33 @@
 import { useNavigate } from "react-router-dom";
 
 const PaymentFailed = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md text-center">
-        <div className="text-red-500 text-6xl mb-4">✕</div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Payment Failed</h1>
-        <p className="text-gray-500 mb-6">Something went wrong. Please try again.</p>
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
-          >
-            Try Again
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300"
-          >
-            Back to Home
-          </button>
+    return (
+        <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">
+            <div className="bg-white p-8 rounded-lg shadow-sm text-center max-w-sm w-full">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-red-500 text-3xl">✕</span>
+                </div>
+                <h1 className="text-2xl font-bold text-slate-800 mb-2">Payment Failed</h1>
+                <p className="text-gray-500 text-sm mb-6">Something went wrong. Please try again.</p>
+                <div className="flex flex-col gap-3">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="w-full bg-slate-800 hover:bg-slate-700 text-white px-6 py-2.5 rounded-lg transition text-sm"
+                    >
+                        Try Again
+                    </button>
+                    <button
+                        onClick={() => navigate("/")}
+                        className="w-full border border-gray-200 text-gray-600 px-6 py-2.5 rounded-lg hover:bg-gray-50 transition text-sm"
+                    >
+                        Back to Home
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default PaymentFailed;

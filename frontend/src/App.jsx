@@ -16,12 +16,14 @@ import Navbar from "./components/Navbar";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
 import Verification from "./pages/Verification";
+import MySales from "./pages/MySales";
 
 function App() {
 
   return (
     <BrowserRouter>
     <Navbar/>
+    <div className="pb-16 md:pb-0 md:pt-16">
     <Routes>
       <Route path="/" element={<Home/>}/>
       <Route path="/login" element={<Login/>}/>
@@ -35,11 +37,13 @@ function App() {
 <Route path="/add-book" element={<AddBook/>}/>
 <Route path="/edit-book/:bookId" element={<EditBook/>}/>
 <Route path="/my-orders" element={<MyOrder/>}/>
+<Route path="/my-sales" element={<MySales/>}/>
 <Route path="/my-cart" element={<Cart/>}/>
 <Route path="/checkout" element={<Checkout/>}/>
 <Route path="/payment/success" element={<PaymentSuccess />} />
 <Route path="/payment/failed" element={<PaymentFailed />} />
     </Routes>
+    </div>
     </BrowserRouter>
   )
 }

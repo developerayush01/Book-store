@@ -1,85 +1,85 @@
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
-import {useAuth} from '../context/AuthContext';
-import { useNavigate} from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
+import axiosInstance from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
-    const {user}=useAuth();
-    const [imagePreview,setimagePreview]=useState(null);
+    const { user,setUser } = useAuth();
+    const [imagePreview, setImagePreview] = useState(null);
     const navigate = useNavigate();
 
-    if(!user) {
-    return <p>Please login first</p>;
-}
+    if (!user) return <p>Please login first</p>;
 
-useEffect(()=>{
-if(user.profilePicture){
-        setimagePreview(user.profilePicture);
-    }
-},[user]);
+    useEffect(() => {
+        if (user.profilePicture) {
+            setImagePreview(user.profilePicture);
+        }
+    }, [user]);
 
+    const handleLogout = async () => {
+        try {
+            await axiosInstance.post("api/users/logout");
+            setUser("");
+            navigate("/");
+        } catch (error) {
+            alert("Logout failed");
+        }
+    };
 
     return (
-            <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">
+        <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4 py-10">
+            <div className="bg-white w-full max-w-md rounded-lg shadow-sm p-6 text-center">
 
-  <div className="bg-white w-full max-w-md rounded-lg shadow-sm p-6 text-center">
+                {/* AVATAR */}
+                {imagePreview ? (
+                    <img
+                        src={imagePreview}
+                        alt="Profile"
+                        className="w-28 h-28 rounded-full object-cover mx-auto mb-4 border-4 border-amber-700"
+                    />
+                ) : (
+                    <div className="w-28 h-28 rounded-full bg-slate-800 flex items-center justify-center text-4xl font-bold text-white mx-auto mb-4">
+                        {user?.name?.charAt(0).toUpperCase()}
+                    </div>
+                )}
 
-    {/* AVATAR */}
-    {imagePreview ? (
-      <img
-        src={imagePreview}
-        alt="Profile"
-        className="w-28 h-28 rounded-full object-cover mx-auto mb-4"
-      />
-    ) : (
-      <div className="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-600 mx-auto mb-4">
-        {user?.name?.charAt(0).toUpperCase()}
-      </div>
-    )}
+                {/* NAME */}
+                <h2 className="text-xl font-bold text-slate-800">{user.name}</h2>
 
-    {/* NAME */}
-    <h2 className="text-xl font-bold text-slate-800">
-      {user.name}
-    </h2>
+                {/* INFO */}
+                <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+                {user.phone && <p className="text-sm text-gray-500">{user.phone}</p>}
 
-    {/* INFO */}
-    <p className="text-sm text-gray-500 mt-1">
-      {user.email}
-    </p>
+                {/* DIVIDER */}
+                <div className="border-t my-5" />
 
-    <p className="text-sm text-gray-500">
-      {user.phone}
-    </p>
-
-    {/* ACTIONS */}
-    <div className="mt-6 flex flex-col gap-2">
-
-      <button
+                {/* ACTIONS */}
+                <div className="flex flex-col gap-3">
+    <button
         onClick={() => navigate("/profile/edit")}
-        className="w-full bg-slate-800 text-white py-2 rounded hover:bg-slate-700 transition"
-      >
+        className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg transition text-sm font-medium"
+    >
         Edit Profile
-      </button>
+    </button>
 
-      <button
+    <button
         onClick={() => navigate("/profile/edit/change-password")}
-        className="w-full border border-slate-800 text-slate-800 py-2 rounded hover:bg-slate-100 transition"
-      >
+        className="w-full border border-slate-800 text-slate-800 py-2.5 rounded-lg hover:bg-slate-50 transition text-sm font-medium"
+    >
         Change Password
-      </button>
+    </button>
 
-      <Link
-        to="/my-books"
-        className="text-sm text-blue-600 mt-2 hover:underline"
-      >
-        View Listed Books →
-      </Link>
-
-    </div>
-
-  </div>
-
+    <button
+        onClick={handleLogout}
+        className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-lg transition text-sm font-medium"
+    >
+        Logout
+    </button>
 </div>
+
+            </div>
+        </div>
     );
 }
 

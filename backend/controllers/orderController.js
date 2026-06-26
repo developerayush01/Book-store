@@ -9,7 +9,7 @@ const createOrder = async (req, res) => {
     if (!loggedId) {
       return res.status(401).json({ message: "Please login first" });
     }
-    const { bookIds,address_id } = req.body;
+    const { bookIds, address_id } = req.body;
 
     const address = await Address.findByPk(address_id);
 
@@ -18,9 +18,9 @@ const createOrder = async (req, res) => {
     for (const bookId of bookIds) {
       const book = await Book.findOne({ where: { id: bookId } });
 
-       console.log("Checking book ID:", bookId);
-    console.log("Book status in DB:", book ? book.status : "not found");
-    
+      ("Checking book ID:", bookId);
+      ("Book status in DB:", book ? book.status : "not found");
+
       if (!book) {
         return res.status(404).json({ message: "Book not found" });
       }
@@ -51,7 +51,7 @@ const createOrder = async (req, res) => {
     }
     return res.status(201).json({ message: "Order created succesfully" });
   } catch (error) {
-    console.log("Order error:", error);
+    ("Order error:", error);
     return res.status(500).json({ message: "Server error on order" });
   }
 };
@@ -63,83 +63,98 @@ const getMyOrder = async (req, res) => {
       return res.status(401).json({ message: "Please login first" });
     }
 
-    const orders = await Order.findAll({ 
-    where: { buyer_id: loggedId },
-    order: [["createdAt", "DESC"]],
-    include: [{
-        model: OrderItem,
-        include: [{
-            model: Book,
-            attributes: ['title', 'price']
-        }]
-    }]
-});
+    const orders = await Order.findAll({
+      where: { buyer_id: loggedId },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: OrderItem,
+          include: [
+            {
+              model: Book,
+              attributes: ["title", "price"],
+            },
+          ],
+        },
+      ],
+    });
 
-    if(orders.length === 0) {
-    return res.status(200).json({ message: "You have no orders yet" });
-}
-    return res.status(200).json({orders});
+    if (orders.length === 0) {
+      return res.status(200).json({ message: "You have no orders yet" });
+    }
+    return res.status(200).json({ orders });
   } catch (error) {
-    console.log("Error in createOrder:", error.message);
-    console.log("Full error:", error);
+    ("Error in createOrder:", error.message);
+    ("Full error:", error);
     return res.status(500).json({ message: "Server error on my order" });
   }
 };
 
-
-const getOrderById=async(req,res)=>{
+const getOrderById = async (req, res) => {
   try {
     const loggedId = req.user.userId;
-    const id=req.params.id;
+    const id = req.params.id;
     if (!loggedId) {
       return res.status(401).json({ message: "Please login first" });
     }
-    const orders=await Order.findOne({where:{id:id}, include: [OrderItem]});
+    const orders = await Order.findOne({
+      where: { id: id },
+      include: [OrderItem],
+    });
 
-    if(!orders) {
-    return res.status(404).json({ message: "You have no orders yet" });
+    if (!orders) {
+      return res.status(404).json({ message: "You have no orders yet" });
     }
 
-    if(orders.buyer_id !== loggedId) {
-    return res.status(403).json({ message: "Not authorized to view this order" });
-}
+    if (orders.buyer_id !== loggedId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to view this order" });
+    }
 
-    return res.status(200).json({orders});
-
+    return res.status(200).json({ orders });
   } catch (error) {
     return res.status(500).json({ message: "Server error on get order by id" });
   }
-}
+};
 
-const getMySales=async(req,res)=>{
+const getMySales = async (req, res) => {
   const seller = req.user.userId;
   try {
-    if(!seller)
-  {
-    return res.status(403).json({message:"Please login first"});
-  }
+    if (!seller) {
+      return res.status(403).json({ message: "Please login first" });
+    }
 
-  const sales=await Order.findAll({
-    include:[{
-      model:OrderItem,
-      required:true,
-      include:[{
-        model:Book,
-        where:{seller_id:seller}
-      }]
-    }]
-  });
+    const sales = await Order.findAll({
+      include: [
+        {
+          model: OrderItem,
+          required: true,
+          include: [
+            {
+              model: Book,
+              where: { seller_id: seller },
+              attributes: ["id", "title", "price", "coverImage"],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "buyer",
+          attributes: ["id", "name", "email"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
 
-  if(sales.length===0)
-  {
-    return res.status(404).json({message:"No orders yet"});
-  }
+    if (sales.length === 0) {
+      return res.status(200).json({ sales: [] });
+    }
 
-  return res.status(200).json({sales});
-
+    return res.status(200).json({ sales });
   } catch (error) {
+    error;
     return res.status(500).json({ message: "Server error on get my sales" });
   }
-  
-}
-module.exports = {createOrder, getMyOrder,getOrderById,getMySales};
+};
+module.exports = { createOrder, getMyOrder, getOrderById, getMySales };

@@ -1,121 +1,114 @@
-const  Address = require("../models/addressModel");
+const Address = require("../models/addressModel");
 
-const addAddress=async(req,res)=>{
+const addAddress = async (req, res) => {
+  try {
+    const user = req.user.userId;
+    const { street, city, district, province } = req.body;
 
-    try {
-        const user=req.user.userId;
-    const {street,city,district,province}=req.body;
-
-    if(!user)
-    {
-        return res.status(403).json({message:"NO user"});
+    if (!user) {
+      return res.status(403).json({ message: "NO user" });
     }
 
     const existingAddress = await Address.findOne({ where: { user_id: user } });
     const is_default = !existingAddress;
 
     await Address.create({
-        user_id:user,
-        street,
-        city,
-        district,
-        province,
-        is_default
-    })
+      user_id: user,
+      street,
+      city,
+      district,
+      province,
+      is_default,
+    });
 
-    return res.status(201).json({message:"Address added"});
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({message:"Server error on address add"});
-    }
-}
+    return res.status(201).json({ message: "Address added" });
+  } catch (error) {
+    error;
+    return res.status(500).json({ message: "Server error on address add" });
+  }
+};
 
-const getAddress=async(req,res)=>{
-
-    try {
-        const user=req.user.userId;
-    if(!user)
-    {
-        return res.status(403).json({message:"Not logged in"});
+const getAddress = async (req, res) => {
+  try {
+    const user = req.user.userId;
+    if (!user) {
+      return res.status(403).json({ message: "Not logged in" });
     }
 
-    const address=await Address.findAll({where:{user_id:user}});
+    const address = await Address.findAll({ where: { user_id: user } });
 
-    return res.status(200).json({address});
-    } catch (error) {
-        return res.status(500).json({message:"Server error on get address"});
+    return res.status(200).json({ address });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error on get address" });
+  }
+};
+
+const setDefault = async (req, res) => {
+  try {
+    const user = req.user.userId;
+    const id = req.params.id;
+    if (!user) {
+      return res.status(403).json({ message: "Not logged in" });
     }
 
-}
+    const address = await Address.findAll({ where: { user_id: user } });
 
-const setDefault=async(req,res)=>{
-
-    try {
-        const user=req.user.userId;
-    const id=req.params.id;
-    if(!user){
-        return res.status(403).json({message:"Not logged in"});
+    if (address.length === 0) {
+      return res.status(404).json({ message: "No address found" });
     }
 
-    const address=await Address.findAll({where:{user_id:user}});
-
-    if(address.length===0)
-    {
-        return res.status(404).json({message:"No address found"})
-    }
+    await Address.update({ is_default: false }, { where: { user_id: user } });
 
     await Address.update(
-        {is_default:false},
-        {where:{user_id:user}}
+      { is_default: true },
+      { where: { user_id: user, id: id } },
     );
 
-    await Address.update(
-        {is_default:true},
-        {where:{user_id:user,id:id}}
-    );
+    return res.status(200).json({ message: "New default address is set." });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error on set default" });
+  }
+};
 
-    return res.status(200).json({message:"New default address is set."});
-
-    } catch (error) {
-        return res.status(500).json({ message: "Server error on set default" });
+const deleteAddress = async (req, res) => {
+  try {
+    const user = req.user.userId;
+    const address = req.params.id;
+    if (!user) {
+      return res.status(403).json({ message: "You are not logged in" });
     }
-    
-}
 
-const deleteAddress=async(req,res)=>{
-    try {
-        const user=req.user.userId;
-        const address=req.params.id
-        if(!user)
-        {
-            return res.status(403).json({message:"You are not logged in"});
-        }
-        
-        const findAddress=await Address.findOne({where:{id:address,user_id:user}});
+    const findAddress = await Address.findOne({
+      where: { id: address, user_id: user },
+    });
 
-        if(!findAddress) {
-            return res.status(404).json({ message: "Address not found" });
-        }
-        
-        await Address.destroy({where:{id:address,user_id:user}});
-
-        const nextDefault=await Address.findOne({where:{user_id:user}});
-
-        if(findAddress.is_default)
-        {
-            if(!nextDefault){
-                return res.status(404).json({message:"No other address is found.Please add new address"})
-            }
-        await Address.update(
-            {is_default:true},
-            {where:{id:nextDefault.id}});
-        }
-
-        return res.status(200).json("Address delete succesful");
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({message:"Server Error"});
+    if (!findAddress) {
+      return res.status(404).json({ message: "Address not found" });
     }
-}
 
-module.exports={addAddress,getAddress,setDefault,deleteAddress};
+    await Address.destroy({ where: { id: address, user_id: user } });
+
+    const nextDefault = await Address.findOne({ where: { user_id: user } });
+
+    if (findAddress.is_default) {
+      if (!nextDefault) {
+        return res
+          .status(404)
+          .json({
+            message: "No other address is found.Please add new address",
+          });
+      }
+      await Address.update(
+        { is_default: true },
+        { where: { id: nextDefault.id } },
+      );
+    }
+
+    return res.status(200).json("Address delete succesful");
+  } catch (error) {
+    error;
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+module.exports = { addAddress, getAddress, setDefault, deleteAddress };
