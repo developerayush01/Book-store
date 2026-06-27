@@ -1,0 +1,121 @@
+# 📚 Books Deal — Secondhand Book Marketplace for Nepal
+
+> A full-stack web application where users can buy and sell secondhand books — built for Nepal, inspired by platforms like OLX.
+
+🌐 **Live:** [booksdeal.com.np](https://book-store-five-xi-70.vercel.app) &nbsp;|&nbsp; 📦 **Backend:** [Render](https://book-store-1-zx4o.onrender.com)
+
+---
+
+## Overview
+
+Books Deal is a secondhand book marketplace built for Nepali users. The same account can act as both a buyer and a seller — list your old books, browse others, add to cart, and pay securely via eSewa.
+
+---
+
+## Features
+
+### 👤 Authentication
+- Register and login with JWT stored in httpOnly cookies
+- Email verification via OTP before login is allowed
+- 30-day session with secure cookie management
+
+### 📖 Books
+- List books for sale with title, price, condition, and images
+- Browse and search available books
+- Edit or delete your own listings
+- Books automatically marked as **Sold** after successful purchase
+
+### 🛒 Cart & Checkout
+- Add multiple books to cart
+- Multi-book checkout in a single transaction
+- Delivery address selection at checkout
+
+### 💳 Payment (eSewa v2)
+- Integrated eSewa v2 payment gateway
+- HMAC-SHA256 signature generation and verification
+- Base64-encoded callback handling
+- Secondary status API confirmation for payment integrity
+- Automatic order creation only after successful payment
+
+### 📦 Orders
+- View purchase history as a buyer
+- View sales history as a seller
+- Delivery address stored per order
+
+### 👤 Profile
+- View and edit profile details
+- Switch between buyer and seller mode
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React (Vite), Tailwind CSS, React Router DOM |
+| Backend | Node.js, Express.js |
+| Database | PostgreSQL (hosted on Supabase) |
+| ORM | Sequelize |
+| Authentication | JWT (httpOnly cookies) |
+| Payment | eSewa v2 | Test Credentials(Developer)
+| Email | Nodemailer (OTP verification) |
+| HTTP Client | Axios |
+| Frontend Hosting | Vercel |
+| Backend Hosting | Render |
+
+## Project Structure
+
+books-deal/
+├── backend/
+│   ├── config/          # Database connection
+│   ├── controllers/     # Route logic (MVC)
+│   ├── middlewares/     # Auth middleware
+│   ├── models/          # Sequelize models
+│   ├── routes/          # Express routes
+│   └── utils/           # eSewa helpers, cron jobs, email
+└── frontend/
+    ├── src/
+    │   ├── api/         # Axios instance & API calls
+    │   ├── components/  # Reusable components
+    │   ├── context/     # Auth context
+    │   └── pages/       # All page components
+    └── vercel.json      # Proxy rewrites for same-origin cookies
+
+## Environment Variables
+
+### Backend (Render)
+
+.env
+DATABASE_URL=
+JWT_SECRET=
+ESEWA_PRODUCT_CODE=
+ESEWA_SECRET_KEY=
+ESEWA_GATEWAY_URL=
+FRONTEND_URL=
+EMAIL_USER=
+EMAIL_PASS=
+
+### Frontend (Vercel)
+
+VITE_BACKEND_URL=
+
+## Key Architecture Decisions
+
+- **Same-origin cookies** — Vercel proxy rewrites `/api/*` to Render backend, so cookies work across all browsers including Brave and Safari
+- **Orders after payment** — Orders are only created after eSewa confirms successful payment, never before
+- **Multi-book transactions** — `book_ids` stored as a JSON array in the Transaction model to support cart purchases
+- **Delivery address** — Stored as direct columns in Order (not FK) to avoid conflicts if address is deleted
+- **UUID primary keys** — Used throughout all models
+- **Email verification** — OTP-based, login blocked until verified
+
+---
+
+## Author
+
+**Ayush Bhattarai**
+- GitHub:https://github.com/developerayush01
+- LinkedIn:https://www.linkedin.com/in/ayush-bhattarai-a6b38238a/
+
+---
+
+*Built with ❤️ for Nepal's book lovers*
