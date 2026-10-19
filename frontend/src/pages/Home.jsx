@@ -25,7 +25,7 @@ function Home() {
       const response = await axiosInstance.get("/api/books/get-all", {
         params: { page, search: searchQuery }
       });
-      setBook(response.data.book);
+      setBook(response.data.book || []);
       setTotalPages(response.data.totalPages);
       setTotalBooks(response.data.totalBooks);
       setCurrentPage(response.data.currentPage);
