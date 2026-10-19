@@ -82,7 +82,7 @@ const registerUser = async (req, res) => {
       is_verified: false,
       verification_token: otp,
       verification_token_expiry: expiry,
-    })("User created, sending email to:", email);
+    });
     await sendVerificationEmail(email, otp);
     ("Email sent successfully");
     return res
@@ -270,7 +270,11 @@ const logOut = async (req, res) => {
       return res.status(401).json({ message: "You are not logged in" });
     }
 
-    res.clearCookie("token");
+    res.clearCookie("token", {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+});
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Server error on logout" });
