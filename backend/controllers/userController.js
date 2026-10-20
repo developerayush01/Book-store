@@ -76,15 +76,21 @@ const registerUser = async (req, res) => {
     const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
     const user = await User.create({
-      name,
-      email,
-      password: hashPassword,
-      is_verified: false,
-      verification_token: otp,
-      verification_token_expiry: expiry,
-    });
-    await sendVerificationEmail(email, otp);
-    ("Email sent successfully");
+  name,
+  email,
+  password: hashPassword,
+  is_verified: false,
+  verification_token: otp,
+  verification_token_expiry: expiry,
+});
+
+try {
+  await sendVerificationEmail(email, otp);
+} catch (emailError) {
+  console.log("Email sending failed:", emailError.message);
+  // Still return success — user is created, they can resend OTP
+  return res.status(201).json({ message: "Registered successfully. Check your email for OTP." });
+}
     return res
       .status(201)
       .json({ message: "Registered successfully. Check your email for OTP." });
