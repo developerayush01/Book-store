@@ -1,16 +1,12 @@
-const Brevo = require("@getbrevo/brevo");
+const { BrevoClient } = require("@getbrevo/brevo");
 
 const sendVerificationEmail = async (email, otp) => {
   try {
-    const apiInstance = new Brevo.TransactionalEmailsApi();
-    
-    // Set the API key using the correct method for the SDK
-    apiInstance.setApiKey(
-      Brevo.TransactionalEmailsApiApiKeys.apiKey, 
-      process.env.BREVO_API_KEY
-    );
+    const brevo = new BrevoClient({
+      apiKey: process.env.BREVO_API_KEY,
+    });
 
-    const response = await apiInstance.sendTransacEmail({
+    const response = await brevo.transactionalEmails.sendTransacEmail({
       sender: { name: "Books Deal", email: process.env.EMAIL_USER },
       to: [{ email }],
       subject: "Verify your email",
@@ -26,7 +22,7 @@ const sendVerificationEmail = async (email, otp) => {
     
     console.log("Email sent successfully:", response);
   } catch (error) {
-    console.error("Error sending email via Brevo:", error.response?.text || error.message);
+    console.error("Error sending email via Brevo:", error.message);
     throw error;
   }
 };
