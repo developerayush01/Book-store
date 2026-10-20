@@ -15,21 +15,26 @@ function Register() {
     const redirectState = location.state;
 
     const handleRegister = async () => {
-        if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
-            setError("All fields are required");
-            return;
-        }
-        try {
-            setLoading(true);
-            await axiosInstance.post("/api/users/register", { name, email, password });
-            navigate("/login", { state: { ...location.state, email } });
-            
-        } catch (error) {
-            setError(error.response?.data?.message || "Registration failed");
-        } finally {
-            setLoading(false);
-        }
-    };
+    if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
+        setError("All fields are required");
+        return;
+    }
+    try {
+        setLoading(true);
+        
+        // 1. Register user (Backend automatically sets the secure HTTP-only cookie)
+        await axiosInstance.post("/api/users/register", { name, email, password });
+        
+        // 2. Redirect right back to where they wanted to go, or home ("/")
+        const redirectTo = location.state?.from || "/"; 
+        navigate(redirectTo, { replace: true });
+
+    } catch (error) {
+        setError(error.response?.data?.message || "Registration failed");
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">
