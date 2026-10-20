@@ -72,6 +72,7 @@ const registerUser = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
@@ -79,21 +80,21 @@ const registerUser = async (req, res) => {
   name,
   email,
   password: hashPassword,
-  is_verified: false,
+  is_verified: true,
   verification_token: otp,
   verification_token_expiry: expiry,
 });
 
-try {
-  await sendVerificationEmail(email, otp);
-} catch (emailError) {
-  console.log("Email sending failed:", emailError.message);
-  // Still return success — user is created, they can resend OTP
-  return res.status(201).json({ message: "Registered successfully. Check your email for OTP." });
-}
+// try {
+//   await sendVerificationEmail(email, otp);
+// } catch (emailError) {
+//   console.log("Email sending failed:", emailError.message);
+//   // Still return success — user is created, they can resend OTP
+//   return res.status(201).json({ message: "Registered successfully. Check your email for OTP." });
+// }
     return res
       .status(201)
-      .json({ message: "Registered successfully. Check your email for OTP." });
+      .json({ message: "Registered successfully." });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
