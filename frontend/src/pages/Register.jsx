@@ -15,20 +15,27 @@ function Register() {
     const redirectState = location.state;
 
     const handleRegister = async () => {
-        if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
-            setError("All fields are required");
-            return;
+    if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
+        setError("All fields are required");
+        return;
+    }
+    try {
+        setLoading(true);
+        const response = await axiosInstance.post("/api/users/register", { name, email, password });
+        
+        if (response.data.token) {
+            localStorage.setItem("token", response.data.token);
         }
-        try {
-            setLoading(true);
-            await axiosInstance.post("/api/users/register", { name, email, password });
-            navigate("/verify", { state: { ...location.state, email } });
-        } catch (error) {
-            setError(error.response?.data?.message || "Registration failed");
-        } finally {
-            setLoading(false);
-        }
-    };
+        
+        const redirectTo = location.state?.from || "/";
+        navigate(redirectTo, { replace: true });
+
+    } catch (error) {
+        setError(error.response?.data?.message || "Registration failed");
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="min-h-screen bg-[#F7F3EC] flex items-center justify-center px-4">
