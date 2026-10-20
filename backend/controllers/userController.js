@@ -73,26 +73,33 @@ const registerUser = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    // const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    // const expiry = new Date(Date.now() + 10 * 60 * 1000);
-
     const user = await User.create({
-  name,
-  email,
-  password: hashPassword,
-  is_verified: true
-});
+      name,
+      email,
+      password: hashPassword,
+      is_verified: true
+    });
 
-// try {
-//   await sendVerificationEmail(email, otp);
-// } catch (emailError) {
-//   console.log("Email sending failed:", emailError.message);
-//   // Still return success — user is created, they can resend OTP
-//   return res.status(201).json({ message: "Registered successfully. Check your email for OTP." });
-// }
-    return res
-      .status(201)
-      .json({ message: "Registered successfully." });
+    // 1. Generate JWT token immediately upon registration
+    const token = jwt.sign(
+      { userId: user.id, phone: user.phone },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+
+    // 2. Set the secure cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    // 3. Return the token in the response so frontend localStorage can grab it
+    return res.status(201).json({ 
+      message: "Registered successfully.",
+      token: token 
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
