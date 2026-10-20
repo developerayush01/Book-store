@@ -22,7 +22,7 @@ const sendVerificationEmail = async (email, otp) => {
     
     console.log("Email sent successfully:", response);
   } catch (error) {
-    console.error("Error sending email via Brevo:", error.message);
+    console.error("CRITICAL BREVO ERROR:", error.message || error);
     throw error;
   }
 };
