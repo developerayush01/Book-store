@@ -1,21 +1,17 @@
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const Brevo = require("@getbrevo/brevo");
 
 const sendVerificationEmail = async (email, otp) => {
-  await transporter.sendMail({
-    from: `"Book Store" <${process.env.EMAIL_USER}>`,
-    to: email,
+  const client = Brevo.ApiClient.instance;
+  const apiKey = client.authentications["api-key"];
+  apiKey.apiKey = process.env.BREVO_API_KEY;
+
+  const transactionalEmailsApi = new Brevo.TransactionalEmailsApi();
+
+  await transactionalEmailsApi.sendTransacEmail({
+    sender: { name: "Books Deal", email: process.env.EMAIL_USER },
+    to: [{ email }],
     subject: "Verify your email",
-    html: `
+    htmlContent: `
       <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px;">
         <h2 style="color: #1e293b;">Email Verification</h2>
         <p>Your verification code is:</p>
