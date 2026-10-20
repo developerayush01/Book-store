@@ -73,16 +73,14 @@ const registerUser = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+    // const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
     const user = await User.create({
   name,
   email,
   password: hashPassword,
-  is_verified: true,
-  verification_token: otp,
-  verification_token_expiry: expiry,
+  is_verified: true
 });
 
 // try {
