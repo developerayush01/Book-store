@@ -8,8 +8,8 @@ const {registerUser,loginUser,verifyOtp,resendOtp,getProfile,logOut, editProfile
 const upload = multer({ storage: multer.memoryStorage() });
 router.post("/register",registerUser);
 router.post("/login",loginUser);
-router.post("/verify-otp", verifyOtp);
-router.post("/resend-otp", resendOtp);
+// router.post("/verify-otp", verifyOtp);
+// router.post("/resend-otp", resendOtp);
 router.get("/profile",auth,getProfile);
 router.put("/profile/edit-profile",auth,editProfile);
 router.put("/profile/edit-profile/change-password",auth,changePassword);

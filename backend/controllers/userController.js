@@ -3,7 +3,17 @@ const { User } = require("../models");
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { sendVerificationEmail } = require("../utils/sendEmail");
+// const { sendVerificationEmail } = require("../utils/sendEmail");
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+};
+
+const signToken = (userId) =>
+  jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "30d" });
 
 const uploadProfilePicture = async (req, res) => {
   try {
@@ -64,84 +74,55 @@ const uploadProfilePicture = async (req, res) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+
+    if (!name?.trim() || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     const existingEmail = await User.findOne({ where: { email } });
     if (existingEmail) {
-      return res.status(400).json({ message: "Email already existed" });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name,
+      name: name.trim(),
       email,
       password: hashPassword,
-      is_verified: true
+      is_verified: true,
     });
 
-    // 1. Generate JWT token immediately upon registration
-    const token = jwt.sign(
-      { userId: user.id, phone: user.phone },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" }
-    );
-
-    // 2. Set the secure cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
-
-    // 3. Return the token in the response so frontend localStorage can grab it
-    return res.status(201).json({ 
-      message: "Registered successfully.",
-      token: token 
-    });
+    res.cookie("token", signToken(user.id), cookieOptions);
+    return res.status(201).json({ message: "Registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     const existingUser = await User.findOne({ where: { email } });
-
     if (!existingUser) {
       return res.status(400).json({ message: "User not found" });
-    } else {
-      const isMatch = await bcrypt.compare(password, existingUser.password);
-
-      if (!isMatch) {
-        return res.status(401).json({ message: "Invalid password" });
-      }
-
-      if (!existingUser.is_verified) {
-        return res
-          .status(403)
-          .json({ message: "Email not verified", email: existingUser.email });
-      }
-
-      if (isMatch) {
-        const token = jwt.sign(
-          { userId: existingUser.id, phone: existingUser.phone },
-          process.env.JWT_SECRET,
-          { expiresIn: "30d" },
-        );
-
-        res.cookie("token", token, {
-          httpOnly: true,
-          secure: true, 
-  sameSite: 'none',
-          maxAge: 30 * 24 * 60 * 60 * 1000,
-        });
-        return res.status(200).json({ message: "Log in succesful" });
-      }
     }
+
+    const isMatch = await bcrypt.compare(password, existingUser.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    res.cookie("token", signToken(existingUser.id), cookieOptions);
+    return res.status(200).json({ message: "Login successful" });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
   }
